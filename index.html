@@ -238,7 +238,6 @@ const FaceDownCard = ({onClick}) => {
 const BreathingCircle = ({onComplete}) => {
   const [phase,setPhase]=useState("ready");
   const [breath,setBreath]=useState(0);
-  const [question,setQuestion]=useState("");
   const [showQ,setShowQ]=useState(false);
   const dur={inhale:4000,exhale:6000};
   const runCycle=(count)=>{setBreath(count+1);setPhase("inhale");setTimeout(()=>{setPhase("exhale");setTimeout(()=>{if(count+1>=3){setPhase("done");setShowQ(true);}else runCycle(count+1);},dur.exhale);},dur.inhale);};
@@ -247,8 +246,8 @@ const BreathingCircle = ({onComplete}) => {
   const sz=expanded?180:phase==="ready"?110:90;
   return (
     <div style={{textAlign:"center",padding:"20px 0"}}>
-      {phase!=="ready"&&phase!=="done"&&<div style={{fontSize:"11px",letterSpacing:"0.2em",textTransform:"uppercase",color:"#FF1F7A",fontFamily:"Georgia,serif",marginBottom:"20px",opacity:0.7}}>Breath {breath} of 3</div>}
-      {phase==="ready"&&<div style={{fontSize:"13px",color:"#aaa",fontFamily:"Georgia,serif",fontStyle:"italic",marginBottom:"20px"}}>Three breaths before you choose</div>}
+      {phase!=="ready"&&phase!=="done"&&<div style={{fontSize:"14px",letterSpacing:"0.2em",textTransform:"uppercase",color:"#FF1F7A",fontFamily:"Georgia,serif",marginBottom:"20px",opacity:0.8}}>Breath {breath} of 3</div>}
+      {phase==="ready"&&<div style={{fontSize:"17px",color:"#555",fontFamily:"Georgia,serif",fontStyle:"italic",marginBottom:"20px"}}>Three breaths before you choose</div>}
       <div onClick={phase==="ready"?()=>runCycle(0):undefined} style={{width:`${sz}px`,height:`${sz}px`,borderRadius:"50%",background:expanded?"radial-gradient(circle,rgba(255,31,122,0.1) 0%,rgba(255,31,122,0.03) 60%,transparent 100%)":"radial-gradient(circle,rgba(255,31,122,0.05) 0%,transparent 70%)",border:`1.5px solid rgba(255,31,122,${phase==="ready"?0.3:0.7})`,margin:"0 auto 8px",display:"flex",alignItems:"center",justifyContent:"center",cursor:phase==="ready"?"pointer":"default",transition:`all ${expanded?dur.inhale:phase==="exhale"?dur.exhale:300}ms ease-in-out`,boxShadow:expanded?"0 0 40px rgba(255,31,122,0.1)":"none"}}>
         <div style={{width:`${sz*0.6}px`,height:`${sz*0.6}px`,borderRadius:"50%",border:`1px solid rgba(255,31,122,${(phase==="ready"?0.3:0.7)*0.5})`,display:"flex",alignItems:"center",justifyContent:"center",transition:`all ${expanded?dur.inhale:phase==="exhale"?dur.exhale:300}ms ease-in-out`}}>
           <div style={{width:"8px",height:"8px",borderRadius:"50%",background:"#FF1F7A",opacity:phase==="ready"?0.3:0.8,transition:"opacity 0.5s"}}/>
@@ -256,7 +255,7 @@ const BreathingCircle = ({onComplete}) => {
       </div>
       <div style={{display:"flex",gap:"8px",justifyContent:"center",margin:"16px 0 24px"}}>{[1,2,3].map(i=><div key={i} style={{width:"6px",height:"6px",borderRadius:"50%",background:breath>=i?"#FF1F7A":"transparent",border:"1px solid rgba(255,31,122,0.4)",transition:"background 0.4s"}}/>)}</div>
       <p style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"18px",color:phase==="done"?"#FF1F7A":"#3a3a3a",fontStyle:"italic",margin:"0 0 24px",transition:"color 0.5s"}}>{labels[phase]||""}</p>
-      {showQ&&(<div style={{animation:"fadeUp 0.6s ease"}}><p style={{fontFamily:"Georgia,serif",fontSize:"15px",color:"#777",fontStyle:"italic",marginBottom:"16px",lineHeight:1.7}}>Ask your highest self one question.<br/>Hold it in your heart as you choose.</p><textarea value={question} onChange={e=>setQuestion(e.target.value)} placeholder="What do I need to know right now..." style={{width:"100%",padding:"16px 18px",fontFamily:"Georgia,serif",fontSize:"15px",color:"#3a3a3a",background:"linear-gradient(160deg,#fdfcf4,#f8f3ec)",border:"1.5px solid rgba(255,31,122,0.18)",borderRadius:"14px",resize:"none",height:"80px",lineHeight:1.7,marginBottom:"16px",fontStyle:"italic"}}/><button onClick={()=>onComplete(question)} style={{width:"100%",background:"linear-gradient(135deg,#FF1F7A,#FF6BAB)",border:"none",borderRadius:"14px",padding:"18px",color:"#fff",fontSize:"16px",fontFamily:"'Playfair Display',Georgia,serif",letterSpacing:"0.08em",boxShadow:"0 4px 20px rgba(255,31,122,0.25)"}}>Choose My Card ✦</button></div>)}
+      {showQ&&(<div style={{animation:"fadeUp 0.6s ease"}}><p style={{fontFamily:"Georgia,serif",fontSize:"17px",color:"#555",fontStyle:"italic",marginBottom:"24px",lineHeight:1.7}}>Get still. Ask your highest self what she wants you to know.<br/>Then choose the card that calls to you.</p><button onClick={()=>onComplete()} style={{width:"100%",background:"linear-gradient(135deg,#FF1F7A,#FF6BAB)",border:"none",borderRadius:"14px",padding:"18px",color:"#fff",fontSize:"17px",fontFamily:"'Playfair Display',Georgia,serif",letterSpacing:"0.08em",boxShadow:"0 4px 20px rgba(255,31,122,0.25)"}}>Choose My Card ✦</button></div>)}
     </div>
   );
 };
@@ -287,81 +286,71 @@ const TransitTab = ({hdType, openCenters}) => {
   return (
     <div>
       {/* Gate Hero */}
-      <div style={{textAlign:"center",padding:"36px 20px 28px",borderBottom:"1px solid #f0e8d4",background:"linear-gradient(180deg,#fffdf7,#fdfcf8)"}}>
-        <div style={{display:"flex",justifyContent:"center",gap:"20px",alignItems:"flex-end",marginBottom:"16px"}}>
-          <Feather size={28} color="#89CFF0"/>
-          <Lotus size={52} color="#FF1F7A"/>
-          <Feather size={28} color="#E8A0BF" style={{transform:"scaleX(-1)"}}/>
+      <div style={{textAlign:"center",padding:"36px 32px 28px",borderBottom:"1px solid #f0e8d4",background:"linear-gradient(180deg,#fffdf7,#fdfcf8)"}}>
+        <div style={{display:"flex",justifyContent:"center",marginBottom:"16px"}}>
+          <MetatronsCube size={90} color="#FF1F7A" opacity={0.55}/>
         </div>
-        <div style={{fontSize:"10px",letterSpacing:"0.25em",color:"#FF1F7A",textTransform:"uppercase",marginBottom:"6px",fontFamily:"Georgia,serif"}}>Sun Transit · {g.dates}</div>
-        <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"40px",color:"#1A1A2E",margin:"0 0 4px",fontWeight:"600"}}>Gate {g.number}</h2>
-        <div style={{fontSize:"20px",color:"#89CFF0",fontFamily:"'Playfair Display',Georgia,serif",fontStyle:"italic",marginBottom:"14px"}}>{g.name}</div>
-        <div style={{display:"flex",gap:"8px",justifyContent:"center",flexWrap:"wrap",marginBottom:"14px"}}>
-          {[g.center,g.channel,g.line].filter(Boolean).map(t=><span key={t} style={{background:"rgba(255,31,122,0.06)",border:"1px solid rgba(255,31,122,0.18)",borderRadius:"20px",padding:"4px 14px",fontSize:"11px",color:"#FF1F7A",fontFamily:"Georgia,serif"}}>{t}</span>)}
-        </div>
-        <div style={{display:"flex",gap:"24px",justifyContent:"center",marginBottom:"12px"}}>
-          {[["Shadow",g.shadow,"#89CFF0"],["Gift",g.gift,"#FF1F7A"],["Siddhi",g.siddhi,"#E8A0BF"]].filter(([,v])=>v).map(([l,v,col])=>(
-            <div key={l} style={{textAlign:"center"}}>
-              <div style={{fontSize:"9px",letterSpacing:"0.18em",textTransform:"uppercase",color:col,fontFamily:"Georgia,serif",marginBottom:"3px"}}>{l}</div>
-              <div style={{fontSize:"13px",color:"#1A1A2E",fontFamily:"'Playfair Display',Georgia,serif",fontStyle:"italic"}}>{v}</div>
-            </div>
-          ))}
-        </div>
-        {hdType&&<div style={{marginTop:"10px"}}><span style={{background:"rgba(137,207,240,0.1)",border:"1px solid rgba(137,207,240,0.25)",borderRadius:"20px",padding:"4px 16px",fontSize:"11px",color:"#89CFF0",fontFamily:"Georgia,serif"}}>✦ {hdType}{openCenters.length>0?` · ${openCenters.length} Open ${openCenters.length===1?"Center":"Centers"}`:""}</span></div>}
+        <div style={{fontSize:"12px",letterSpacing:"0.25em",color:"#FF1F7A",textTransform:"uppercase",marginBottom:"8px",fontFamily:"Georgia,serif"}}>Sun Transit · {g.dates}</div>
+        <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"44px",color:"#1A1A2E",margin:"0 0 6px",fontWeight:"600"}}>Gate {g.number}</h2>
+        <div style={{fontSize:"22px",color:"#89CFF0",fontFamily:"'Playfair Display',Georgia,serif",fontStyle:"italic",marginBottom:"16px"}}>{g.name}</div>
       </div>
 
-      <div style={{padding:"32px 22px"}}>
-        <Block eyebrow="Boss Energy Download" title="You Already Know." icon={<div style={{fontSize:"24px"}}>☀️</div>}>{c.boss}</Block>
-        <Divider/>
-        <Block eyebrow="Where You Might Get Stuck" eyebrowColor="#89CFF0" title="The Shadow of This Gate" icon={<Feather size={26} color="#89CFF0"/>}>{c.shadow}</Block>
-        <Divider/>
-
-        {/* HD TYPE + CENTERS SECTION — only shows if member set up their design */}
-        {(typeSection||centerSections.length>0)&&(
-          <>
-            <Block eyebrow="Your Human Design This Week" eyebrowColor="#89CFF0" title="How This Gate Affects Your Design" icon={<Lotus size={26} color="#89CFF0"/>}>
-              {[
-                typeSection,
-                centerSections.length>0 ? `How this shadow affects your open centers:\n\n${centerSections.map(center=>`${c.centerContent[center]}`).join("\n\n")}` : null
-              ].filter(Boolean).join("\n\n")}
-            </Block>
+      <div style={{padding:"36px 32px"}}>
+        {/* Two-column layout on desktop, single on mobile */}
+        <div className="two-col" style={{display:"block"}}>
+          <div>
+            <Block eyebrow="Boss Energy Download" title="You Already Know." icon={<div style={{fontSize:"24px"}}>☀️</div>}>{c.boss}</Block>
             <Divider/>
-          </>
-        )}
+            <Block eyebrow="Where You Might Get Stuck" eyebrowColor="#89CFF0" title="The Shadow of This Gate" icon={<Feather size={26} color="#89CFF0"/>}>{c.shadow}</Block>
+            <Divider/>
+            {(typeSection||centerSections.length>0)&&(
+              <>
+                <Block eyebrow="Your Human Design This Week" eyebrowColor="#89CFF0" title="How This Gate Affects Your Design" icon={<Lotus size={26} color="#89CFF0"/>}>
+                  {[typeSection,centerSections.length>0?`How this shadow affects your open centers:\n\n${centerSections.map(center=>c.centerContent[center]).join("\n\n")}`:null].filter(Boolean).join("\n\n")}
+                </Block>
+                <Divider/>
+              </>
+            )}
+          </div>
+          <div>
+            <Block eyebrow="Highest Self Expression" eyebrowColor="#E8A0BF" title="Stepping Into Your Power" sub="The gift of this gate" icon={<div style={{fontSize:"22px"}}>✨</div>}>{c.high}</Block>
+            <Divider/>
+            <Block eyebrow="How This Aligns With Your Business" title="Your Magnetic Shift This Week" icon={<Feather size={26} color="#FF1F7A" style={{transform:"scaleX(-1)"}}/>}>{c.business}</Block>
+            <Divider/>
+            <Block eyebrow="Your Move This Week" title="One Thing. Today." icon={<div style={{fontSize:"22px"}}>🔥</div>}>{c.move}</Block>
+          </div>
+        </div>
 
-        <Block eyebrow="Highest Self Expression" eyebrowColor="#E8A0BF" title="Stepping Into Your Power" sub="The gift of this gate" icon={<div style={{fontSize:"22px"}}>✨</div>}>{c.high}</Block>
-        <Divider/>
-        <Block eyebrow="How This Aligns With Your Business" title="Your Magnetic Shift This Week" icon={<Feather size={26} color="#FF1F7A" style={{transform:"scaleX(-1)"}}/>}>{c.business}</Block>
-        <Divider/>
-        <Block eyebrow="Your Move This Week" title="One Thing. Today." icon={<div style={{fontSize:"22px"}}>🔥</div>}>{c.move}</Block>
         <Divider/>
 
         {/* Reflections */}
         <div style={{marginBottom:"32px"}}>
           <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"6px"}}>
             <div style={{fontSize:"20px"}}>✦</div>
-            <div style={{fontSize:"12px",letterSpacing:"0.22em",textTransform:"uppercase",color:"#89CFF0",fontFamily:"Georgia,serif"}}>Reflection for Today</div>
+            <div style={{fontSize:"13px",letterSpacing:"0.22em",textTransform:"uppercase",color:"#89CFF0",fontFamily:"Georgia,serif"}}>Reflection for Today</div>
           </div>
           <div style={{width:"48px",height:"2px",background:"linear-gradient(to right,rgba(137,207,240,0.5),transparent)",marginBottom:"18px"}}/>
-          {c.reflections.map((q,i)=>(
-            <div key={i} style={{display:"flex",gap:"14px",alignItems:"flex-start",marginBottom:"16px"}}>
-              <span style={{color:"#FF1F7A",fontSize:"16px",marginTop:"2px",flexShrink:0}}>✨</span>
-              <p style={{margin:0,fontSize:"16px",color:"#444",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:1.8}}>{q}</p>
-            </div>
-          ))}
+          <div className="two-col" style={{display:"block"}}>
+            {c.reflections.map((q,i)=>(
+              <div key={i} style={{display:"flex",gap:"14px",alignItems:"flex-start",marginBottom:"20px"}}>
+                <span style={{color:"#FF1F7A",fontSize:"18px",marginTop:"2px",flexShrink:0}}>✨</span>
+                <p style={{margin:0,fontSize:"17px",color:"#444",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:1.8}}>{q}</p>
+              </div>
+            ))}
+          </div>
         </div>
         <Divider/>
 
         {/* Affirmation */}
-        <div style={{background:"linear-gradient(135deg,rgba(255,31,122,0.03),rgba(255,107,171,0.02))",border:"1.5px solid rgba(255,31,122,0.12)",borderRadius:"20px",padding:"32px 26px",textAlign:"center"}}>
+        <div style={{background:"linear-gradient(135deg,rgba(255,31,122,0.03),rgba(255,107,171,0.02))",border:"1.5px solid rgba(255,31,122,0.12)",borderRadius:"20px",padding:"40px 36px",textAlign:"center"}}>
           <div style={{display:"flex",justifyContent:"center",gap:"16px",marginBottom:"16px"}}>
             <Feather size={22} color="#89CFF0"/><Lotus size={36} color="#FF1F7A"/><Feather size={22} color="#E8A0BF" style={{transform:"scaleX(-1)"}}/>
           </div>
-          <div style={{fontSize:"12px",letterSpacing:"0.25em",textTransform:"uppercase",color:"#FF1F7A",marginBottom:"12px",fontFamily:"Georgia,serif"}}>Today's Affirmation</div>
-          <p style={{fontSize:"15px",color:"#aaa",fontFamily:"Georgia,serif",fontStyle:"italic",marginBottom:"18px",lineHeight:1.6}}>{c.affirmationInstruction}</p>
-          <p style={{fontSize:"24px",color:"#1A1A2E",fontFamily:"'Playfair Display',Georgia,serif",fontStyle:"italic",lineHeight:1.65,margin:"0 0 22px"}}>{c.affirmation}</p>
-          <div style={{width:"36px",height:"1px",background:"rgba(255,31,122,0.3)",margin:"0 auto 18px"}}/>
-          <p style={{fontSize:"16px",color:"#555",fontFamily:"Georgia,serif",lineHeight:1.85,margin:0}}>{c.affirmationClose}</p>
+          <div style={{fontSize:"13px",letterSpacing:"0.25em",textTransform:"uppercase",color:"#FF1F7A",marginBottom:"14px",fontFamily:"Georgia,serif"}}>Today's Affirmation</div>
+          <p style={{fontSize:"17px",color:"#666",fontFamily:"Georgia,serif",fontStyle:"italic",marginBottom:"20px",lineHeight:1.6}}>{c.affirmationInstruction}</p>
+          <p style={{fontSize:"26px",color:"#1A1A2E",fontFamily:"'Playfair Display',Georgia,serif",fontStyle:"italic",lineHeight:1.65,margin:"0 0 24px"}}>{c.affirmation}</p>
+          <div style={{width:"36px",height:"1px",background:"rgba(255,31,122,0.3)",margin:"0 auto 20px"}}/>
+          <p style={{fontSize:"17px",color:"#555",fontFamily:"Georgia,serif",lineHeight:1.85,margin:0,maxWidth:"680px",marginLeft:"auto",marginRight:"auto"}}>{c.affirmationClose}</p>
         </div>
       </div>
     </div>
@@ -374,25 +363,17 @@ const OracleTab = () => {
   const [three,setThree]=useState([]);
   const [picked,setPicked]=useState(null);
   const [revealed,setRevealed]=useState(false);
-  const [userQ,setUserQ]=useState("");
   const [why,setWhy]=useState("");
 
-  const onBreath=(q)=>{setUserQ(q||"");const s=[...ORACLE_CARDS].sort(()=>Math.random()-0.5).slice(0,3);setThree(s);setPhase("selecting");};
+  const onBreath=()=>{const s=[...ORACLE_CARDS].sort(()=>Math.random()-0.5).slice(0,3);setThree(s);setPhase("selecting");};
 
   const pick=async(card)=>{
-    setPicked(card);setWhy("");setPhase("loading");
-    if(userQ&&userQ.trim().length>3){
-      try{
-        const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,messages:[{role:"user",content:`Write 3-4 sentences for "Why You Pulled This Card" for the "${card.title}" oracle card. The woman's question: "${userQ}". Card energy: ${card.deeperReading.slice(0,120)}. Speak directly as "you". No jargon. Don't start with "You pulled this card because". Connect her question to this card's energy in a personal, activating way.`}]})});
-        const data=await res.json();
-        const t=data.content?.[0]?.text||"";
-        setWhy(t.trim()||card.whyYouPulled);
-      }catch{setWhy(card.whyYouPulled);}
-    }else{setWhy(card.whyYouPulled);await new Promise(r=>setTimeout(r,500));}
+    setPicked(card);setWhy(card.whyYouPulled);setPhase("loading");
+    await new Promise(r=>setTimeout(r,2000));
     setPhase("revealed");setTimeout(()=>setRevealed(true),100);
   };
 
-  const reset=()=>{setPhase("breath");setPicked(null);setRevealed(false);setThree([]);setUserQ("");setWhy("");};
+  const reset=()=>{setPhase("breath");setPicked(null);setRevealed(false);setThree([]);setWhy("");};
 
   return (
     <div style={{paddingBottom:"32px"}}>
@@ -400,14 +381,13 @@ const OracleTab = () => {
         <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"32px",color:"#1A1A2E",margin:"0 0 6px",fontWeight:"400",fontStyle:"italic"}}>Your <span style={{color:"#FF1F7A"}}>Oracle</span></h2>
         <p style={{margin:0,fontSize:"15px",color:"#888",fontFamily:"Georgia,serif",fontStyle:"italic"}}>A message from your highest self</p>
       </div>
-      {phase==="breath"&&<div style={{padding:"24px 24px 32px"}}><p style={{textAlign:"center",fontFamily:"'Playfair Display',Georgia,serif",fontSize:"19px",color:"#1A1A2E",fontStyle:"italic",marginBottom:"4px",lineHeight:1.6}}>Before you choose your card...</p><p style={{textAlign:"center",fontFamily:"Georgia,serif",fontSize:"15px",color:"#888",fontStyle:"italic",marginBottom:"0",lineHeight:1.7}}>Take three breaths. Hold your question in your heart.</p><BreathingCircle onComplete={onBreath}/></div>}
+      {phase==="breath"&&<div style={{padding:"32px 32px 40px"}}><p style={{textAlign:"center",fontFamily:"'Playfair Display',Georgia,serif",fontSize:"24px",color:"#1A1A2E",fontStyle:"italic",marginBottom:"8px",lineHeight:1.6}}>Before you choose your card...</p><p style={{textAlign:"center",fontFamily:"Georgia,serif",fontSize:"18px",color:"#555",fontStyle:"italic",marginBottom:"0",lineHeight:1.7}}>Take three breaths. Hold your question in your heart.</p><BreathingCircle onComplete={onBreath}/></div>}
       {phase==="selecting"&&(
-        <div style={{padding:"28px 20px"}}>
-          {userQ&&<div style={{background:"rgba(255,31,122,0.03)",border:"1px solid rgba(255,31,122,0.12)",borderRadius:"12px",padding:"14px 18px",marginBottom:"20px",textAlign:"center"}}><p style={{margin:0,fontFamily:"Georgia,serif",fontSize:"14px",color:"#FF1F7A",fontStyle:"italic"}}>"{userQ}"</p></div>}
-          <p style={{textAlign:"center",fontFamily:"'Playfair Display',Georgia,serif",fontSize:"19px",color:"#1A1A2E",fontStyle:"italic",marginBottom:"6px"}}>Which card is calling to you?</p>
-          <p style={{textAlign:"center",fontFamily:"Georgia,serif",fontSize:"14px",color:"#aaa",fontStyle:"italic",marginBottom:"28px"}}>Don't think. Feel.</p>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"14px",marginBottom:"24px"}}>{three.map(card=><FaceDownCard key={card.id} onClick={()=>pick(card)}/>)}</div>
-          <div style={{textAlign:"center"}}><button onClick={reset} style={{background:"none",border:"1px solid #e8e0d0",borderRadius:"10px",padding:"12px 24px",color:"#999",fontFamily:"Georgia,serif",fontSize:"14px"}}>Start Again</button></div>
+        <div style={{padding:"32px 32px"}}>
+          <p style={{textAlign:"center",fontFamily:"'Playfair Display',Georgia,serif",fontSize:"24px",color:"#1A1A2E",fontStyle:"italic",marginBottom:"8px"}}>Which card is calling to you?</p>
+          <p style={{textAlign:"center",fontFamily:"Georgia,serif",fontSize:"17px",color:"#777",fontStyle:"italic",marginBottom:"32px"}}>Don't think. Feel.</p>
+          <div className="two-col-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"16px",marginBottom:"24px"}}>{three.map(card=><FaceDownCard key={card.id} onClick={()=>pick(card)}/>)}</div>
+          <div style={{textAlign:"center"}}><button onClick={reset} style={{background:"none",border:"1.5px solid #ddd",borderRadius:"10px",padding:"12px 28px",color:"#666",fontFamily:"Georgia,serif",fontSize:"15px"}}>Start Again</button></div>
         </div>
       )}
       {phase==="loading"&&(<div style={{padding:"60px 24px",textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",minHeight:"400px",justifyContent:"center"}}><div style={{marginBottom:"32px",animation:"slowPulse 3s infinite ease-in-out"}}><MetatronsCube size={160} color="#FF1F7A" opacity={0.6}/></div><LoadingMessages/></div>)}
@@ -417,7 +397,6 @@ const OracleTab = () => {
             <div style={{fontSize:"11px",letterSpacing:"0.22em",textTransform:"uppercase",color:"#FF1F7A",fontFamily:"Georgia,serif",marginBottom:"12px"}}>You Pulled</div>
             <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"36px",color:"#1A1A2E",margin:"0 0 8px",fontWeight:"600"}}>{picked.title}</h2>
             <p style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"17px",color:"#FF1F7A",fontStyle:"italic",margin:"0 0 8px"}}>{picked.symbol}</p>
-            {userQ&&<p style={{fontFamily:"Georgia,serif",fontSize:"14px",color:"#aaa",fontStyle:"italic",margin:"8px 0 0"}}>In answer to: "{userQ}"</p>}
           </div>
           <div style={{background:"linear-gradient(160deg,#fdfcf4,#f5ede0)",border:`1.5px solid ${picked.color}30`,borderRadius:"20px",padding:"36px 28px",marginBottom:"24px",position:"relative",overflow:"hidden",boxShadow:"0 8px 48px rgba(255,31,122,0.07)"}}>
             {["tl","tr","bl","br"].map(pos=>(<div key={pos} style={{position:"absolute",top:pos.startsWith("t")?14:undefined,bottom:pos.startsWith("b")?14:undefined,left:pos.endsWith("l")?14:undefined,right:pos.endsWith("r")?14:undefined,opacity:0.2}}><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d={pos==="tl"?"M1 9 L1 1 L9 1":pos==="tr"?"M17 9 L17 1 L9 1":pos==="bl"?"M1 9 L1 17 L9 17":"M17 9 L17 17 L9 17"} stroke="#FF1F7A" strokeWidth="1.2"/></svg></div>))}
@@ -458,28 +437,28 @@ const SetupModal = ({onComplete,initial}) => {
   const tog=c=>setCenters(p=>p.includes(c)?p.filter(x=>x!==c):[...p,c]);
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(253,252,248,0.97)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",backdropFilter:"blur(8px)"}}>
-      <div style={{maxWidth:"420px",width:"100%",maxHeight:"90vh",overflowY:"auto",background:"#fff",borderRadius:"24px",border:"1.5px solid rgba(255,31,122,0.12)",padding:"36px 28px",boxShadow:"0 8px 60px rgba(255,31,122,0.07)"}}>
-        <div style={{textAlign:"center",marginBottom:"24px"}}>
-          <Lotus size={44} color="#FF1F7A"/>
-          <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"22px",color:"#1A1A2E",margin:"12px 0 6px",fontWeight:"normal"}}>{initial?"Update Your Design":"Welcome, Queen"}</h2>
-          <p style={{margin:0,fontSize:"13px",color:"#aaa",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:1.6}}>{step===1?"Select your Human Design type so your weekly message speaks directly to you.":"Select your open (undefined) centers. Skip any you're unsure of."}</p>
+      <div style={{maxWidth:"480px",width:"100%",maxHeight:"90vh",overflowY:"auto",background:"#fff",borderRadius:"24px",border:"1.5px solid rgba(255,31,122,0.2)",padding:"40px 32px",boxShadow:"0 8px 60px rgba(255,31,122,0.1)"}}>
+        <div style={{textAlign:"center",marginBottom:"28px"}}>
+          <Lotus size={48} color="#FF1F7A"/>
+          <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"28px",color:"#1A1A2E",margin:"14px 0 8px",fontWeight:"normal"}}>{initial?"Update Your Design":"Welcome, Queen"}</h2>
+          <p style={{margin:0,fontSize:"16px",color:"#555",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:1.6}}>{step===1?"Select your Human Design type so your weekly message speaks directly to you.":"Select your open (undefined) centers. Skip any you're unsure of."}</p>
         </div>
         {step===1?(
           <>
-            <div style={{display:"flex",flexDirection:"column",gap:"8px",marginBottom:"24px"}}>
-              {HD_TYPES.map(t=><button key={t} onClick={()=>setType(t)} style={{background:type===t?"linear-gradient(135deg,rgba(255,31,122,0.07),rgba(137,207,240,0.05))":"#fafaf8",border:type===t?"1.5px solid #FF1F7A":"1.5px solid #ede8dc",borderRadius:"12px",padding:"14px 18px",color:type===t?"#1A1A2E":"#bbb",fontSize:"15px",fontFamily:"Georgia,serif",textAlign:"left",transition:"all 0.2s"}}>{type===t?"✦  ":""}{t}</button>)}
+            <div style={{display:"flex",flexDirection:"column",gap:"10px",marginBottom:"24px"}}>
+              {HD_TYPES.map(t=><button key={t} onClick={()=>setType(t)} style={{background:type===t?"linear-gradient(135deg,rgba(255,31,122,0.09),rgba(137,207,240,0.07))":"#f5f5f5",border:type===t?"2px solid #FF1F7A":"2px solid #ddd",borderRadius:"12px",padding:"16px 20px",color:type===t?"#1A1A2E":"#444",fontSize:"17px",fontFamily:"Georgia,serif",textAlign:"left",transition:"all 0.2s",fontWeight:type===t?"600":"normal"}}>{type===t?"✦  ":""}{t}</button>)}
             </div>
-            <button onClick={()=>type&&setStep(2)} disabled={!type} style={{width:"100%",background:type?"linear-gradient(135deg,#FF1F7A,#FF6BAB)":"#eee",border:"none",borderRadius:"12px",padding:"16px",color:type?"#fff":"#bbb",fontSize:"15px",fontFamily:"Georgia,serif",letterSpacing:"0.06em"}}>Continue →</button>
+            <button onClick={()=>type&&setStep(2)} disabled={!type} style={{width:"100%",background:type?"linear-gradient(135deg,#FF1F7A,#FF6BAB)":"#ddd",border:"none",borderRadius:"12px",padding:"18px",color:type?"#fff":"#999",fontSize:"17px",fontFamily:"Georgia,serif",letterSpacing:"0.06em"}}>Continue →</button>
           </>
         ):(
           <>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginBottom:"20px"}}>
-              {CENTERS.map(c=><button key={c} onClick={()=>tog(c)} style={{background:centers.includes(c)?"rgba(137,207,240,0.07)":"#fafaf8",border:centers.includes(c)?"1.5px solid #89CFF0":"1.5px solid #ede8dc",borderRadius:"10px",padding:"12px 10px",color:centers.includes(c)?"#1A1A2E":"#bbb",fontSize:"13px",fontFamily:"Georgia,serif",textAlign:"center",transition:"all 0.2s"}}>{centers.includes(c)?"✦ ":""}{c}</button>)}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"20px"}}>
+              {CENTERS.map(c=><button key={c} onClick={()=>tog(c)} style={{background:centers.includes(c)?"rgba(137,207,240,0.1)":"#f5f5f5",border:centers.includes(c)?"2px solid #89CFF0":"2px solid #ddd",borderRadius:"10px",padding:"14px 10px",color:centers.includes(c)?"#1A1A2E":"#444",fontSize:"15px",fontFamily:"Georgia,serif",textAlign:"center",transition:"all 0.2s",fontWeight:centers.includes(c)?"600":"normal"}}>{centers.includes(c)?"✦ ":""}{c}</button>)}
             </div>
-            <p style={{fontSize:"11px",color:"#ccc",fontFamily:"Georgia,serif",textAlign:"center",marginBottom:"16px",fontStyle:"italic"}}>Not sure? Skip — you can update anytime.</p>
+            <p style={{fontSize:"14px",color:"#777",fontFamily:"Georgia,serif",textAlign:"center",marginBottom:"20px",fontStyle:"italic"}}>Not sure? Skip — you can update anytime.</p>
             <div style={{display:"flex",gap:"10px"}}>
-              <button onClick={()=>setStep(1)} style={{background:"#fafaf8",border:"1.5px solid #ede8dc",borderRadius:"12px",padding:"14px 18px",color:"#ccc",fontFamily:"Georgia,serif"}}>←</button>
-              <button onClick={()=>type&&onComplete({type,centers})} style={{flex:1,background:"linear-gradient(135deg,#FF1F7A,#FF6BAB)",border:"none",borderRadius:"12px",padding:"16px",color:"#fff",fontSize:"15px",fontFamily:"Georgia,serif",letterSpacing:"0.06em"}}>Enter the Portal ✦</button>
+              <button onClick={()=>setStep(1)} style={{background:"#f5f5f5",border:"2px solid #ddd",borderRadius:"12px",padding:"16px 20px",color:"#555",fontFamily:"Georgia,serif",fontSize:"17px"}}>←</button>
+              <button onClick={()=>type&&onComplete({type,centers})} style={{flex:1,background:"linear-gradient(135deg,#FF1F7A,#FF6BAB)",border:"none",borderRadius:"12px",padding:"18px",color:"#fff",fontSize:"17px",fontFamily:"Georgia,serif",letterSpacing:"0.06em"}}>Enter the Portal ✦</button>
             </div>
           </>
         )}
@@ -507,32 +486,46 @@ function App() {
 
   return (
     <div style={{minHeight:"100vh",background:"#FDFCF8",color:"#1A1A2E",fontFamily:"Georgia,serif",position:"relative"}}>
+      <style>{`
+        @media(min-width:900px){
+          .two-col{display:grid !important;grid-template-columns:1fr 1fr;gap:40px}
+          .two-col-3{display:grid !important;grid-template-columns:1fr 1fr 1fr;gap:20px}
+          .card-grid{grid-template-columns:1fr 1fr 1fr 1fr 1fr !important}
+        }
+      `}</style>
       <Sparkles/>
       {showSetup&&<SetupModal onComplete={handleProfile} initial={profile}/>}
-      <div style={{position:"relative",zIndex:1,maxWidth:"680px",margin:"0 auto",paddingBottom:"60px"}}>
-        <div style={{textAlign:"center",padding:"36px 20px 22px",borderBottom:"1px solid #f0e8d4"}}>
-          <div style={{fontSize:"10px",letterSpacing:"0.28em",textTransform:"uppercase",color:"#FF1F7A",marginBottom:"8px",fontFamily:"Georgia,serif"}}>Embody Wealth Inner Circle</div>
-          <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"30px",fontWeight:"600",margin:"0 0 4px",color:"#1A1A2E"}}>The Wealth Portal</h1>
-          <p style={{margin:0,fontSize:"13px",color:"#bbb",fontStyle:"italic"}}>Weekly energy · Oracle · Business alignment</p>
+      <div style={{position:"relative",zIndex:1,maxWidth:"1100px",margin:"0 auto",paddingBottom:"60px"}}>
+
+        {/* Header */}
+        <div style={{textAlign:"center",padding:"36px 32px 22px",borderBottom:"1px solid #f0e8d4"}}>
+          <div style={{fontSize:"12px",letterSpacing:"0.28em",textTransform:"uppercase",color:"#FF1F7A",marginBottom:"8px",fontFamily:"Georgia,serif"}}>Embody Wealth</div>
+          <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"34px",fontWeight:"600",margin:"0 0 4px",color:"#1A1A2E"}}>The Wealth Portal</h1>
+          <p style={{margin:0,fontSize:"15px",color:"#666",fontStyle:"italic"}}>This Week's Magnetic Message</p>
           {profile?.type&&(
-            <div style={{display:"flex",gap:"8px",justifyContent:"center",flexWrap:"wrap",marginTop:"12px"}}>
-              {[profile.type,...(profile.centers?.length?[`${profile.centers.length} Open ${profile.centers.length===1?"Center":"Centers"}`]:[])].map(t=><span key={t} style={{background:"rgba(255,31,122,0.05)",border:"1px solid rgba(255,31,122,0.18)",borderRadius:"20px",padding:"4px 14px",fontSize:"11px",color:"#FF1F7A",fontFamily:"Georgia,serif"}}>{t}</span>)}
+            <div style={{display:"flex",gap:"10px",justifyContent:"center",flexWrap:"wrap",marginTop:"14px"}}>
+              {[profile.type,...(profile.centers?.length?[`${profile.centers.length} Open ${profile.centers.length===1?"Center":"Centers"}`]:[])].map(t=><span key={t} style={{background:"rgba(255,31,122,0.07)",border:"1.5px solid rgba(255,31,122,0.3)",borderRadius:"20px",padding:"6px 18px",fontSize:"15px",color:"#FF1F7A",fontFamily:"Georgia,serif",fontWeight:"600"}}>{t}</span>)}
             </div>
           )}
         </div>
+
+        {/* Tabs */}
         <div style={{display:"flex",borderBottom:"1px solid #f0e8d4"}}>
           {[{id:"transit",label:"☀  Sun Transit"},{id:"oracle",label:"✦  Daily Oracle"}].map(t=>(
-            <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,background:"none",border:"none",borderBottom:tab===t.id?"3px solid #FF1F7A":"3px solid transparent",padding:"18px",color:tab===t.id?"#FF1F7A":"#666",fontSize:"15px",letterSpacing:"0.1em",textTransform:"uppercase",fontFamily:"'Playfair Display',Georgia,serif",fontWeight:tab===t.id?"600":"400",transition:"all 0.2s"}}>{t.label}</button>
+            <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,background:"none",border:"none",borderBottom:tab===t.id?"3px solid #FF1F7A":"3px solid transparent",padding:"20px",color:tab===t.id?"#FF1F7A":"#555",fontSize:"16px",letterSpacing:"0.1em",textTransform:"uppercase",fontFamily:"'Playfair Display',Georgia,serif",fontWeight:tab===t.id?"600":"400",transition:"all 0.2s"}}>{t.label}</button>
           ))}
         </div>
-        <div style={{animation:"fadeUp 0.35s ease"}}>
+
+        <div style={{animation:"fadeUp 0.35s ease",padding:"0 16px"}}>
           {tab==="transit"&&<TransitTab hdType={profile?.type} openCenters={profile?.centers||[]}/>}
           {tab==="oracle"&&<OracleTab/>}
         </div>
-        <div style={{textAlign:"center",padding:"20px",borderTop:"1px solid #f0e8d4"}}>
-          <button onClick={()=>setShowSetup(true)} style={{background:"none",border:"none",color:"#888",fontSize:"13px",letterSpacing:"0.1em",textTransform:"uppercase",fontFamily:"Georgia,serif",fontWeight:"600",marginBottom:"14px",display:"block",margin:"0 auto 14px"}}>Update My Design</button>
+
+        {/* Footer */}
+        <div style={{textAlign:"center",padding:"24px 32px",borderTop:"1px solid #f0e8d4"}}>
+          <button onClick={()=>setShowSetup(true)} style={{background:"none",border:"none",color:"#666",fontSize:"14px",letterSpacing:"0.1em",textTransform:"uppercase",fontFamily:"Georgia,serif",fontWeight:"600",display:"block",margin:"0 auto 14px"}}>Update My Design</button>
           <Lotus size={24} color="#FF1F7A"/>
-          <p style={{margin:"8px 0 0",fontSize:"12px",color:"#FF6BAB",letterSpacing:"0.1em",fontFamily:"Georgia,serif"}}>To living our dreams. — Aurailia ✦</p>
+          <p style={{margin:"8px 0 0",fontSize:"13px",color:"#FF6BAB",letterSpacing:"0.1em",fontFamily:"Georgia,serif"}}>To living our dreams. — Aurailia ✦</p>
         </div>
       </div>
     </div>
