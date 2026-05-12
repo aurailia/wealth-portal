@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"/>
+<title>Embody Wealth Portal — Aurailia</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#FDFCF8;font-family:Georgia,serif;min-height:100vh}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,31,122,0.3);border-radius:2px}
+@keyframes sp{0%,100%{opacity:0;transform:scale(0.5) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(15deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:0.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}
+@keyframes slowPulse{0%,100%{opacity:0.5;transform:scale(0.95)}50%{opacity:1;transform:scale(1.05)}}
+button{cursor:pointer;transition:opacity 0.2s}
+button:hover{opacity:0.88}
+textarea:focus{outline:none}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║           UPDATE THIS SECTION EVERY WEEK                        ║
+// ║  Give Aurailia the gate info from human.design/daily-impact     ║
+// ║  and she pastes the new WEEKLY_GATE and WEEKLY_CONTENT blocks   ║
+// ╚══════════════════════════════════════════════════════════════════╝
+
+const WEEKLY_GATE = {
+  number: 23,
+  name: "The Gate of Assimilation",
+  center: "Throat Center",
+  channel: "Channel of Structuring (43–23)",
+  line: "Line 3 — Individuality",
+  shadow: "Complexity",
+  gift: "Simplicity",
+  siddhi: "Quintessence",
+  dates: "May 9–14, 2026",
+};
+
+const WEEKLY_CONTENT = {
+  boss: `The Sun is in Gate 23 this week — the Gate of Assimilation. Throat Center. One message: stop adding to it.
+
+The offer you keep rewriting. The post sitting in your drafts. The program you keep making more comprehensive because it doesn't feel like enough yet. It's enough. You know it's enough. You're just not trusting that simple is allowed to be powerful.
+
+Gate 23's voice is "I know." Not I think. Not let me explain. Just — I know.
+
+That certainty is what your clients feel when they decide to work with you. Not your framework. Not your credentials. Your certainty. This week, say the thing. Simply. Like you mean it.`,
+
+  shadow: `When this energy is heavy, it pulls you into the shadow of Gate 23 — and this week's shadow looks like:
+
+Overcomplicating everything.
+
+You might feel a clear knowing about your offer, your message, your next move — and then immediately bury it under more.
+
+~ You rewrite the caption that was already good.
+~ You add another module to the program that was already complete.
+~ You explain your work to someone who was already interested — until they're not.
+~ You say ten things when one would have closed it.
+
+Gate 23 doesn't need more layers. It's the part of you that already knows what to say. The simple version. The direct version. The one that felt too easy to be right.
+
+If you keep adding to what's already done, you'll stay stuck in motion without momentum. The offer sitting in your drafts — the one that feels too obvious, too simple — that's the one that converts.
+
+To step out of this shadow: before you add anything this week, ask yourself — am I adding because this genuinely needs it, or because simple feels too vulnerable?
+
+That question will tell you everything.`,
+
+  high: `(The gift of this gate)
+
+When you're living this energy fully, you're the woman who trusts what she knows — completely.
+
+You don't defend your offer. You don't over-explain your process. You say the simple, true thing and you let it land. And that clarity? That's what makes you magnetic. People are drawn to the woman who knows — not the one still building a case for why she's qualified.
+
+That version of you doesn't wait until the offer is perfect or the website is ready or the caption sounds smart enough. She creates from what she knows. She speaks from it. She builds from it.
+
+That's the version of you available this week. Let her lead.`,
+
+  business: `In your business this week, this is about honoring what you already know.
+
+The offer that came to you fully formed. The message you keep writing and deleting because it feels too simple. The content you know needs to be said even though you can't build a strategy deck around it. Your knowing IS your strategy.
+
+Stop second-guessing it and start building from it.
+
+🔥 Your Magnetic Shift...
+
+You don't become magnetic by saying more. You become magnetic by meaning what you say completely.
+
+When your message comes from what you actually know — not from what you think sounds professional — your ideal client feels it. She stops scrolling. She reads it twice. She DMs you.`,
+
+  move: `You already know which offer keeps pulling at you. Stop adding to it. Say what it does in one sentence and let that be enough.
+
+Sit down today and write the simplest version of what you offer. The most true version. Post it. Send it. Say it out loud.
+
+Stop waiting until it's more. It's already enough.`,
+
+  reflections: [
+    "Where am I making my message more complicated than it needs to be — and what am I afraid will happen if I simplify it?",
+    "What's the one thing I know about my client's problem that I keep burying under more information?",
+    "If I trusted that simple was enough, what would I say — and what would I finally stop saying?",
+  ],
+
+  affirmation: `"I say what I know. Simply. Completely. My clarity is what draws people in — not my explanation."`,
+  affirmationInstruction: "Hand on your Throat. Take a breath. Say this out loud.",
+  affirmationClose: "Say it every morning this week before you write anything. Let it become the filter for everything that comes out of your mouth and onto your page. Because the version of you that signs clients this week isn't saying more. She's saying less — and meaning every word.",
+
+  // HD TYPE — personalized paragraph per type (shown based on member's setup)
+  typeContent: {
+    "Manifesting Generator": `You're a Manifesting Generator. You move fast, you feel everything, and you have more ideas in a week than most people have in a year. Gate 23 this week is asking you to stop responding to every idea and start committing to one clear thing. Your sacral knows which one. You've felt it. You keep skipping past it because it seems too simple. It's not.`,
+    "Generator": `You're a Generator. Your power is in your response — and Gate 23 this week is asking you to respond to what's already inside you, not to what everyone else is putting out. You've been absorbing other people's content, other people's messaging, other people's frameworks — and wondering why your voice feels muddy. This is why.`,
+    "Projector": `You're a Projector. You see things other people miss — and Gate 23 this week is asking you to trust that your insight is enough. You don't need more credentials. You don't need more proof. You need to say what you see, simply, and wait for the people who recognize it.`,
+    "Manifestor": `You're a Manifestor. You're here to initiate — and Gate 23 this week is clearing the path for you to do exactly that. But the shadow is catching you first. You're holding back the thing you know needs to be said because you're not sure how it'll land. Say it anyway. That's what you're built for.`,
+    "Reflector": `You're a Reflector. Every center in your chart is open — which means this week, Gate 23 in the Sun is moving through you more intensely than almost anyone else. You're sampling and amplifying the collective's need to explain and justify. None of that is yours. Your job this week is to witness it without absorbing it. Get still before you create anything.`,
+  },
+
+  // OPEN CENTERS — how Gate 23's shadow amplifies through each center
+  centerContent: {
+    "Head": `Your Head Center is open, which means this week you're absorbing everyone else's mental pressure — their questions, their need to figure things out — and it's running through your voice as over-justification. That spiral of "but what if they don't understand" isn't yours. It's the room's anxiety coming through your Throat. Drop from your head to your chest before you write anything this week.`,
+    "Ajna": `With your Ajna open, you're picking up on other people's certainty and trying to match it with more explanation. You think the right angle, the right words, the right breakdown will finally make it land. But Gate 23's gift isn't a better framework. It's fewer words said with complete conviction. Trust what you know without building a case for it.`,
+    "Throat": `Your Throat Center is open, and Gate 23 in the Sun is conditioning you hard right now. You feel this urgent pressure to post, to speak, to say something — even when nothing is fully ready. That urgency isn't your signal. It's conditioning. What you say when you wait for it to feel genuinely ready will hit ten times harder than anything pushed out from that pressure.`,
+    "G Center": `With your G Center open, you're deeply influenced by your environment right now — and if you've been around people whose message is scattered or unclear, you've absorbed some of that confusion into your own content. Get into a space that feels clean and aligned before you write anything this week. Your clarity is always environment-dependent. Honor that.`,
+    "Heart / Will": `Your Will Center is open, which means Gate 23's shadow shows up for you as trying to prove your value through volume. More content. More explanation. More proof that you're worth it. You're not earning your place this week — you already have it. One clear, grounded statement from a woman who knows her worth closes more than ten posts written from a place of proving.`,
+    "Solar Plexus": `With your Solar Plexus open, you're feeling the collective's emotional waves this week — and they're making you second-guess your message before you even share it. You feel the room's doubt and call it your own uncertainty. It's not. Your message was right the first time. Check in with yourself away from the noise before you rewrite anything.`,
+    "Sacral": `Your Sacral Center is open, which means you're running on borrowed energy right now — drive and momentum that isn't yours. Content and offers created from that place feel flat when they land because the energy behind them isn't sustainable or real. Slow down this week. Create from rest. What you build from your own quiet authority will carry more weight than anything pushed out from borrowed fuel.`,
+    "Spleen": `With your Spleen open, fear is making your message complicated. Fear of being misunderstood. Fear of saying the wrong thing. Fear of being too direct, too simple, too much. But that fear isn't a signal to add more layers — it's a signal that the simple version is actually ready and it's asking you to trust it. The first version was right.`,
+    "Root": `Your Root Center is open, which means you're feeling intense pressure to figure your message out right now, get the offer right right now, say something right now. That urgency is Gate 23's shadow amplified through your open Root. Gate 23's gift doesn't come from urgency. It comes from settling. Give yourself permission to slow down — clarity arrives faster than forcing ever could.`,
+  },
+};
+
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║           END OF WEEKLY UPDATE SECTION                          ║
+// ║           Everything below stays the same every week            ║
+// ╚══════════════════════════════════════════════════════════════════╝
+
+const STORAGE_KEY = "ewp_profile_v3";
+
+const HD_TYPES = ["Manifesting Generator","Generator","Projector","Manifestor","Reflector"];
+const CENTERS = ["Head","Ajna","Throat","G Center","Heart / Will","Solar Plexus","Sacral","Spleen","Root"];
+
+const LOADING_MSGS = [
+  "Connecting with your highest self...",
+  "Receiving your message...",
+  "Reading the energy of your question...",
+  "Your answer is arriving...",
+  "Listening to what she wants you to know...",
+];
+
+const ORACLE_CARDS = [
+  {id:1,title:"The Sovereign",symbol:"♛",color:"#FF1F7A",message:`"The throne was never something to earn. It was always something to claim. And the only reason you haven't claimed it yet is because you're still waiting for someone else to crown you."`,deeperReading:`You've been treating readiness like a destination. Like if you just fix one more thing, learn one more skill, get one more testimonial — then you'll finally feel qualified to step into the role you've been circling for months.\n\nShe doesn't wait for readiness. She decides, and then she shows up as decided. There's a version of you who's already running the business fully. Already charging the price. Already saying no to the wrong clients and yes to the right ones. She isn't somewhere in the future. She's right here, asking you to stop auditing your worthiness and start moving from it.\n\nThe only thing standing between you and her is the decision. Not the circumstances. Not the timing. Not what anyone else thinks.\n\nThe decision.`,whyYouPulled:`You pulled this card because somewhere this week, you caught yourself shrinking. Dimming it down. Waiting for external evidence before you let yourself lead. The Sovereign isn't asking you to be louder. She's asking you to be decided.`,action:"Make the one decision you've been circling. Write it down. Speak it out loud. Then take one visible action from that place today."},
+  {id:2,title:"The Magnetic Pull",symbol:"✦",color:"#89CFF0",message:`"You don't manufacture magnetism. You uncover it. Every time you try to be what you think people want, you cover it over. Every time you show up as exactly who you are, you strip another layer back."`,deeperReading:`You've been working hard to be compelling. Studying what's performing well. Adjusting your tone, your niche, your aesthetic to match what you see working for other people. And wondering why it still doesn't feel like yours.\n\nMagnetism isn't a strategy. It's a frequency. It's the particular quality of someone who is so settled in herself that people feel safe around her certainty. They're not drawn to your content because it's optimized. They're drawn because they can feel that you actually mean it.\n\nThe less you try to attract people and the more you simply express what's true for you, the more people come. Not because you've cracked an algorithm. Because authenticity at full volume is genuinely rare.\n\nStop performing expertise. Speak from it. That shift alone will change everything.`,whyYouPulled:`You pulled this card because you've been chasing traction instead of embodying truth. Your energy knows the difference. So does your audience.`,action:"Post one piece of content today with zero strategy attached. Just the true thing. Write it once, don't edit it more than twice, and send it."},
+  {id:3,title:"The Deep Root",symbol:"⬡",color:"#4B3F72",message:`"You keep looking at what's above the ground. The real work has been happening underground, in the dark, where no one can see it — including you."`,deeperReading:`There's a version of this journey that looks slow from the outside and is actually building something unshakeable. You're in that version right now. Every boundary you held when it would have been easier to fold. Every time you stayed consistent when no one was watching. That's all root system.\n\nThe tree that survives storms isn't the tallest one. It's the one with the deepest roots. You've been growing roots.\n\nThe impatience you're feeling right now isn't a sign that nothing is working. It's a sign that you're about to break the surface.\n\nTrust the underground season. It's the foundation everything else gets built on.`,whyYouPulled:`You pulled this card because you needed to be reminded that slow doesn't mean stopped. Your foundation is more solid than it looks.`,action:"Write down three invisible things you've built in the last six months — mindset shifts, boundaries held, skills developed. That's your root system. Name it."},
+  {id:4,title:"The Money River",symbol:"◈",color:"#FF1F7A",message:`"Money is not the reward for hard work. It's the response to clarity. When you're clear about who you serve, what you offer, and what it costs — money follows that clarity like water follows a channel."`,deeperReading:`You've been working hard. No one can accuse you of not trying. But hard work alone doesn't create cashflow — clarity does. And right now, something in your business is murky.\n\nSomewhere there's a leak. And money is flowing around the leak instead of through it.\n\nThe fix isn't more effort. It's more precision. One sentence that describes your work so clearly that the right person reads it and feels found. One offer that delivers a specific result. One price you say with no hesitation.\n\nWhen those three things click, cashflow stops feeling like a hustle.`,whyYouPulled:`You pulled this card because the inconsistency isn't a character flaw — it's a clarity problem. Find the leak. Fix it.`,action:"Identify the one place where your clarity is lowest — your niche, your offer, or your price — and simplify it today. One sentence. Make it undeniable."},
+  {id:5,title:"The Necessary Pause",symbol:"◯",color:"#89CFF0",message:`"The most productive thing you can do today might be nothing. Everything you're about to create needs the version of you that exists on the other side of rest."`,deeperReading:`You've been running on the idea that consistent output equals consistent income. So you keep producing. Keep posting. Keep creating. Even when you're empty.\n\nBut your best work has never come from depletion. It's come from overflow. From the moments when something had been quietly composting inside you and finally broke the surface fully formed.\n\nThe pause you've been avoiding isn't laziness. It's a pre-requisite. Your next breakthrough is waiting on the other side of some real rest.\n\nGive yourself permission to stop. Not forever. Just long enough to remember who you are.`,whyYouPulled:`You pulled this card because you've been running on fumes and calling it dedication. Your highest self is asking you to stop confusing exhaustion with commitment.`,action:"Block two unscheduled hours this week. No content, no strategy, no calls. Just space. Something important needs room to arrive."},
+  {id:6,title:"The Visible Woman",symbol:"✧",color:"#E8A0BF",message:`"Visibility isn't a risk you take when you're ready. It's a practice you build before you feel ready. The woman who's always visible just started before she felt safe."`,deeperReading:`You've been treating visibility like a reward — something you'll give yourself once the offer is polished, the website is done, the niche is locked. But the niche gets clear through showing up, not before.\n\nEvery day you stay in preparation mode, your ideal client is out there looking for someone who does exactly what you do. And not finding you.\n\nThe fear of being seen isn't about vanity. It's about the terrifying possibility that you'll show up fully and it still won't be enough. But the people who need your work don't need a perfect version of you. They need the real one.\n\nYour visibility is not just for you. It's for her.`,whyYouPulled:`You pulled this card because something has been ready to be shared and you've been holding it back. Today is the day it goes out.`,action:"Post the thing you've been sitting on. The content you wrote and didn't publish. The offer you made and didn't announce. Put it out today."},
+  {id:7,title:"The Uncrossed Line",symbol:"⌖",color:"#FF1F7A",message:`"There is a line you have been standing at the edge of for longer than you want to admit. The question isn't whether you're ready. It's whether you're willing to stop making a case for waiting."`,deeperReading:`It might be a price increase. A program you've been designing without launching. A niche pivot you know is right but haven't announced. A client you need to let go of.\n\nWhatever the line is — you've been at its edge long enough that you've memorized every reason not to cross it. You've assessed the risk from every angle. And in all that time, the line hasn't moved. Neither have you.\n\nThe truth is you already know what's on the other side. Crossing the line makes it real — and real things can fail. But staying at the edge is its own kind of failure.\n\nCross it today.`,whyYouPulled:`You pulled this card because the waiting is costing you more than the crossing ever could.`,action:"Name the line today. Write it down. Then take one concrete step across it. Not all the way — one step."},
+  {id:8,title:"The Soulmate Client",symbol:"❋",color:"#E8A0BF",message:`"She's not a demographic. She's a real woman who woke up this morning feeling exactly the way you describe — and she's been searching for someone who actually gets it. That someone is you."`,deeperReading:`You've been writing for everyone. Hoping that if you cast the net wide enough, someone will bite. But the content that converts isn't the content that resonates with the most people — it's the content that makes one specific person feel like you wrote it in her journal.\n\nShe's out there right now. She's scrolling past content that almost gets it. She's tired of almost.\n\nWhen you get specific enough — when you name the exact thought she has at 11pm, the specific moment she second-guesses herself — she stops scrolling. She saves it. She DMs you.\n\nYou don't need more people. You need to speak more precisely to the one.`,whyYouPulled:`You pulled this card because your content has been too broad this week. Your soulmate client is out there. Make it easy for her to find herself in your words.`,action:"Write one piece of content today that speaks to her exact moment — the specific thought, the specific feeling. Make her feel like you wrote it only for her."},
+  {id:9,title:"The Nervous System",symbol:"〜",color:"#89CFF0",message:`"Your business cannot grow past the ceiling your nervous system has set. The work of expansion isn't just strategic. It's somatic."`,deeperReading:`You've done the mindset work. You've set the intentions. And yet something keeps pulling you back to the familiar ceiling — the same income level, the same type of client, the same patterns playing out with different faces.\n\nThis isn't a strategy problem. Your nervous system has a set point — a level of visibility, income, and responsibility it has decided is safe. When you push past it, it pulls you back. Not to be difficult. Because safety is its job.\n\nThe way through isn't to force past the ceiling. It's to expand the safety range. To let your body slowly learn that more is safe.\n\nYou're not stuck. You're recalibrating.`,whyYouPulled:`You pulled this card because the ceiling you keep hitting isn't in your strategy. It's in your system. This week, tend to the system first.`,action:"Before you open your laptop today, spend five minutes doing something that regulates your nervous system. Then create from that state."},
+  {id:10,title:"The Clear Offer",symbol:"◆",color:"#FF1F7A",message:`"Confusion is not a neutral state. It costs you every day. Every confused visitor who leaves without booking. Every interested follower who can't figure out how to work with you."`,deeperReading:`You know your work is good. You know it transforms people. But when someone lands on your page or asks what you do — something in the description doesn't capture it. It's too broad, or trying to include everything so it ends up representing nothing.\n\nClarity isn't limiting. It's the opposite. A clear offer doesn't shrink your audience — it magnetizes the right part of it.\n\nOne offer. One transformation. One person you serve. One sentence that says it plainly.\n\nThe rest is decoration.`,whyYouPulled:`You pulled this card because somewhere in your business, something needs to get simpler. Not smaller — simpler.`,action:"Write the one-sentence description of your core offer today. Subject. Verb. Result. Read it to someone outside your industry. If they get it immediately, it's ready."},
+  {id:11,title:"The Ancestor's Gift",symbol:"⬟",color:"#4B3F72",message:`"The gifts you carry were handed to you through lineages you may never fully know. What lives in you is older than you. It's asking to move through you, not just be held by you."`,deeperReading:`There are things you do naturally that took other people decades to learn. Ways you hold space that feel effortless to you and transformational to others. Insights that drop in without effort.\n\nYou've probably spent years minimizing this. Calling it luck or intuition or "just how I am." But it's a gift given to you to be given forward.\n\nThe woman who most needs what you carry is waiting for you to stop treating your gifts as ordinary.\n\nYour gifts don't belong to you. They belong to the people they're meant to reach. Your only job is to be the channel.`,whyYouPulled:`You pulled this card because you've been hiding the very thing that makes you irreplaceable. Stop treating your most powerful gift like it's too simple to mention.`,action:"Name the gift today. The one that feels too obvious to you and too rare to find anywhere else. Put it front and center."},
+  {id:12,title:"The Frequency First",symbol:"≋",color:"#89CFF0",message:`"The content you write from desperation performs differently than the content you write from overflow. Your clients feel the frequency underneath the words. Always."`,deeperReading:`You can write the same post in two different states and have it land completely differently. Same words. Different energy underneath. The one written from "I need this to work" carries a static that people feel before they've read the second sentence.\n\nThis is not woo. This is reality. Energy is information. Your nervous system state is transmitted through your tone, your word choices, the subtle desperation or groundedness in how you phrase things.\n\nThe most important business practice you have isn't a content calendar. It's checking in with yourself before you create anything.\n\nFrequency first. Strategy second. Always.`,whyYouPulled:`You pulled this card because something you've been putting out this week has had the wrong energy underneath it. Check your state before you create anything today.`,action:"Before you write, post, or send anything today — check in. What state are you in? What do you need to feel first? Tend to that. Then create."},
+  {id:13,title:"The Bold Price",symbol:"✺",color:"#FF1F7A",message:`"The price you charge is a statement about what you believe your work is worth. And your clients can hear that belief — or the lack of it — before they ever see a number."`,deeperReading:`You've been pricing from fear. Not dramatically — but the number you charge has been chosen based on what you think people will say yes to, not what the work is worth. And somewhere in your body, you know that.\n\nUndercharging doesn't make you humble. It makes you resentful. And resentful energy does not build premium businesses.\n\nThe right price is the one that makes you feel genuinely excited to do the work. The one that attracts clients who come prepared because they've invested.\n\nYour next price increase isn't about deserving more. It's about creating the conditions for your best work.`,whyYouPulled:`You pulled this card because you've been leaving money on the table and calling it generosity. Price from belief, not from fear.`,action:"Look at your current prices today. If any of them feel like an apology, change them. The number that makes you feel genuinely excited — that's the one."},
+  {id:14,title:"The Inner Compass",symbol:"⊕",color:"#E8A0BF",message:`"You've been outsourcing your knowing. Asking for opinions on decisions your body already made. Your compass is working. You just keep ignoring it."`,deeperReading:`Every time you ask for three more opinions on a decision you already know the answer to, you train yourself further away from your own authority.\n\nYour instincts can be trusted. They always could. The instinct that arrived before the thinking started — that one. Not the one that came after you'd consulted everyone.\n\nYour inner compass isn't broken. It's been drowned out. By other people's certainty. By the noise of someone else's strategy working for someone else.\n\nTrust your body. It knows more than your research does.`,whyYouPulled:`You pulled this card because you already know the answer to the thing you've been asking everyone about. Stop asking. Do the thing your body said first.`,action:"Name the decision you've been overthinking. Write down the answer your gut gave you in the first thirty seconds. Act on that answer today."},
+  {id:15,title:"The Sacred No",symbol:"⊗",color:"#4B3F72",message:`"Every yes that isn't a full yes is a slow leak. It just drains — quietly, consistently — until you look up one day and wonder why you have no energy left for the work that actually matters."`,deeperReading:`You've been saying yes to things you should be protecting your energy from. Not because you don't know better — because the no feels too uncomfortable. Because the guilt of declining feels bigger than the cost of agreeing.\n\nBut the cost shows up later. In the call you dreaded all day. In the client whose energy depletes rather than energizes. In the resentment that builds so quietly you barely notice it until it's everywhere.\n\nA well-placed no is not selfish. It's precise. It clears the calendar for a yes that actually lights you up.\n\nYour no is not a rejection. It's an act of integrity toward yourself.`,whyYouPulled:`You pulled this card because something on your calendar or in your inbox needs a no. You know what it is. Say it today.`,action:"Identify the one thing you need to say no to — a client, a commitment, a request. Say it today. Kindly and completely."},
+  {id:16,title:"The Content That Converts",symbol:"❂",color:"#FF1F7A",message:`"Content that gets likes validates. Content that converts transforms. The difference is whether you're performing your expertise or speaking from it."`,deeperReading:`You've been writing content that teaches. That provides value in the abstract. And people appreciate it — they save it, they comment "so helpful." But they don't book.\n\nBecause booking requires something different. It requires that she reads your content and thinks: she knows exactly what I'm going through. Not approximately. Exactly.\n\nThat quality of recognition doesn't come from frameworks. It comes from naming the specific. The 2am thought. The exact thing she says to herself when another launch doesn't land.\n\nYou know these things about your ideal client because they were your things once too.`,whyYouPulled:`You pulled this card because your content has been landing in people's heads and not their hearts. Get more specific. Write the thing that makes her feel found.`,action:"Write one post today that names the exact moment your ideal client is in — the specific thought, the specific feeling. Make her feel like you wrote it for her."},
+  {id:17,title:"The Identity Upgrade",symbol:"◉",color:"#89CFF0",message:`"You cannot think your way into a new identity. You can only act your way in. One decision at a time — choosing to behave like the woman you're becoming before the evidence confirms it's safe to."`,deeperReading:`The version of you who has consistent $10k months doesn't wait until she feels ready before she raises her prices. She raises her prices because that's what she does.\n\nThe gap between where you are and where you want to be isn't primarily a strategy gap. It's an identity gap. And the only way to close it is to start behaving as if it's already closed — one decision at a time.\n\nNot fake it till you make it. That's performance. More like: decide who you are and then let your behavior reflect the decision. Even before the bank account agrees.\n\nAct as decided. Then watch the circumstances rearrange.`,whyYouPulled:`You pulled this card because you've been waiting for evidence before you step into the identity. Make the identity decision first. The evidence will follow.`,action:"Make one decision today from the identity of the woman you're becoming — not from where you currently are. Price, boundary, post, investment. One decision. From her."},
+  {id:18,title:"The Long Game",symbol:"∞",color:"#4B3F72",message:`"The compound effect is invisible until it isn't. Every piece of content you've published. Every client you've served. Every belief you've shifted. It's all accumulating. Just not on your timeline."`,deeperReading:`You've been measuring your progress against someone else's visible results. Watching the highlight reel of people who seem further along. But you don't know their timeline.\n\nWhat you do know is your own story. And in your own story, there is more progress than you're currently giving yourself credit for.\n\nThe way you think about your work has changed. The clients you're attracting are getting closer to the clients you want. The words you're finding for what you do are getting more precise.\n\nThat's how the game is won — not in one big moment but in the accumulation of thousands of small right moves.`,whyYouPulled:`You pulled this card because you've been in a season that looks slow from the outside. It's not slow. It's compounding. Stay in it.`,action:"Write down five things that are different — better — than they were six months ago. Keep that list somewhere visible. That's your evidence."},
+  {id:19,title:"The Embodied Launch",symbol:"❀",color:"#E8A0BF",message:`"The launch that sells isn't the most polished one. It's the one that comes from a woman who believes so completely in what she built that her certainty becomes the most persuasive thing about it."`,deeperReading:`You've been treating launch energy like a performance — a specific way of showing up with specific frameworks. But the thing that actually closes sales isn't the structure. It's the energy underneath it.\n\nYour ideal client can feel whether you believe in your offer. She makes her decision based on that feeling long before she's finished reading the sales page.\n\nThe most powerful launch preparation isn't more content. It's more conviction. Reminding yourself why this works. Sitting with the transformation and letting yourself feel genuinely proud of what you built.\n\nLaunch from that place.`,whyYouPulled:`You pulled this card because something needs to be put out into the world and you've been adjusting it instead of releasing it. Adjust your belief, not your offer.`,action:"Record a voice note about your offer today — no script, just speak. Then listen back. The energy in that recording is the energy of your launch."},
+  {id:20,title:"The Ripple",symbol:"≈",color:"#89CFF0",message:`"The woman who worked with you and rebuilt her confidence. The one who raised her prices and finally stopped resenting her work. You don't see the full downstream of what you do. But it's real."`,deeperReading:`You measure your impact in the metrics available to you — sales, followers, open rates. But those metrics capture almost none of what you actually create.\n\nThe conversation your client had with her daughter after she did the work with you. The way she shows up differently in her own business now. The ripple that started with you and traveled somewhere you'll never see.\n\nYour work matters more than your metrics show. It always has.\n\nKeep doing the work as if the full ripple is already happening. Because it is.`,whyYouPulled:`You pulled this card because you've been measuring the wrong things and feeling small based on the measurement. Your impact is much larger than your analytics.`,action:"Reach out to one past client today. Not to sell anything. Just to ask what shifted for her after working with you. Listen to her answer."},
+  {id:21,title:"The Aligned Pivot",symbol:"↺",color:"#FF1F7A",message:`"The pivot you've been afraid to make isn't a betrayal of where you've been. It's an evolution. The version of you who's ready for what's next is allowed to move."`,deeperReading:`You've been staying in a version of your business that no longer fits because changing feels like admitting the old version was wrong. But it wasn't wrong. It was right for then. And then became now.\n\nEvolution isn't inconsistency. It's integrity. It means you've grown and your business is growing with you.\n\nThe clients who are right for the new version will find you in the new version.\n\nGive yourself permission to become more specifically yourself.`,whyYouPulled:`You pulled this card because something in your business needs to change and you've been holding it still out of fear. Let it move.`,action:"Name the thing that needs to change — offer, niche, positioning, pricing. Make one visible change today. Let your business reflect who you actually are now."},
+  {id:22,title:"The Wealth Frequency",symbol:"☽",color:"#4B3F72",message:`"Wealth is not a reward. It's a frequency. The frequency you hold about money is the frequency you're broadcasting. The universe responds to what you're transmitting."`,deeperReading:`You've been doing all the right things on the surface while holding a belief underneath that quietly contradicts everything. That wanting more is greedy. That charging well means valuing money over service.\n\nNone of that is true. But the body believes what it's been taught. Those beliefs are in the price you say with an apology already attached. In the discount you offer before anyone asks.\n\nWealth as a frequency means moving through your business as if there's enough. As if the right clients are coming. As if your work is worth what you charge and more.\n\nWhat you orient from shapes what you attract.`,whyYouPulled:`You pulled this card because somewhere in your relationship with money, there's a belief that needs updating. Find it today.`,action:"Do one thing today that a woman in genuine abundance would do — raise a price, decline the wrong client, invest in something that will grow your business."},
+  {id:23,title:"The Signature Gift",symbol:"✶",color:"#E8A0BF",message:`"What makes you different isn't something you need to develop. It's something you need to stop hiding."`,deeperReading:`There is something you do that is genuinely yours. Not a skill you learned. Not a certification you earned. Something native. Something that was working before you had language for it.\n\nYou've probably been treating this as the footnote rather than the headline. Because it feels too simple. Too obvious to be the thing.\n\nIt's the thing.\n\nThe market is full of people who learned the same curriculum. What the market is missing is more people willing to lead with what's actually theirs.`,whyYouPulled:`You pulled this card because you've been leading with what you learned instead of what you are. Your signature gift is the thing people actually come back for.`,action:"Write down the one quality in your work that is most distinctly yours. Then put it front and center somewhere today — bio, offer description, content."},
+  {id:24,title:"The Patient Builder",symbol:"⧫",color:"#89CFF0",message:`"Great things are built twice: once in the imagination and once in reality. The second version takes longer than expected. You are in the second version. This is the build."`,deeperReading:`You had a vision. You can still see it clearly. And you can also see how far the current reality is from that vision. That gap is not evidence that the vision was wrong. It's just the shape of the middle.\n\nEvery great thing has a middle. The middle is messy and unglamorous and looks like failure from certain angles. You're in it.\n\nThe builders who quit in the middle thought the middle meant something about the vision. It doesn't. It means something about the timeline.\n\nThe timeline is not the vision. The timeline is just time.`,whyYouPulled:`You pulled this card because you've been in the middle and interpreting it as failure. It's not. It's the build. Stay in it.`,action:"Identify the one thing you need to do next in your business — not the big thing, the next thing. Do just that one thing today."},
+  {id:25,title:"The Open Door",symbol:"⌬",color:"#FF1F7A",message:`"There is an opportunity in front of you that you've been treating as optional. It isn't. The door is open. And hesitation is its own kind of decision."`,deeperReading:`You've been researching this opportunity. Running it through every possible scenario. Consulting people who are not as close to it as you are.\n\nBut you already know. You've known since the first time it came across your awareness.\n\nThe fear doesn't go away first. You walk through, and then the fear recedes. That's the sequence.\n\nThe opportunity won't wait indefinitely. When they're met with consistent hesitation, they find someone else who said yes.`,whyYouPulled:`You pulled this card because you've been circling the thing you need to say yes to. Stop circling. Say yes today.`,action:"Send the email. Book the call. Submit the application. Take the one step that commits you to the direction you already know is right."},
+  {id:26,title:"The Grounded Leader",symbol:"⊞",color:"#4B3F72",message:`"The most magnetic leaders aren't the loudest ones. They're the ones whose presence makes other people feel safe. Who hold steady when things are uncertain."`,deeperReading:`Your community doesn't need you to have everything figured out. They need you to be present while you figure it out.\n\nWhat they're buying when they invest in you is not just the deliverable. It's access to your nervous system. Your stability. Your way of holding things.\n\n"I'm figuring this out too and here's what I know so far" is more compelling than the performance of having all the answers.\n\nYour community doesn't need a guru. They need a grounded woman who knows her work and shows up anyway.`,whyYouPulled:`You pulled this card because your people need you to show up this week — not polished, not perfect, just present.`,action:"Share something real today. Not a highlight. Not a teaching. Just where you actually are in your business or your thinking. Lead from that place."},
+  {id:27,title:"The Miracle in the Mundane",symbol:"✿",color:"#E8A0BF",message:`"You've been looking for a sign. You've been waiting for the big moment. Meanwhile the confirmation is arriving in the small things you keep walking past."`,deeperReading:`The DM that came in last week that you half-read and meant to reply to. The idea that arrived in the shower that you wrote a note about and haven't returned to. The inquiry that came in through a referral that you haven't followed up on.\n\nThese are not random small things. These are the pieces of the next chapter arriving in the shape they can currently arrive in.\n\nIf you keep overlooking them because they're not arriving as the lightning bolt you've been expecting, you'll miss them.\n\nThe miracle is often not dramatic. It's a quiet knock at a door you've been walking past.`,whyYouPulled:`You pulled this card because something small is asking for your attention and you've been waiting for something big instead. The small thing is the thing.`,action:"Go through your DMs, your notes, your inbox — and follow up on the small thing you've been overlooking. Do it today."},
+  {id:28,title:"The CEO Body",symbol:"❧",color:"#89CFF0",message:`"You cannot run a high-frequency business from a depleted body. Your body is not the vessel for your work — it is the instrument of it."`,deeperReading:`You've been treating your body like something to manage around rather than something to resource from. Skipping meals when you're on a deadline. Not sleeping enough because there's more to do. Overriding the signals.\n\nBut your body is not falling behind. Your body is telling you where your business is falling behind. The depletion you're feeling is the system telling you it's running on reserves.\n\nThe CEO who built something that actually lasts didn't do it by burning through herself. She learned to treat her own energy as the most precious resource in the business.\n\nBefore you open your laptop today, ask your body what it needs.`,whyYouPulled:`You pulled this card because you've been overriding your body's signals and calling it dedication. Your body is your first business asset.`,action:"Do one thing for your body today before you do anything for your business. Sleep, movement, food, rest — whatever it's been asking for. Do that first."},
+  {id:29,title:"The Alchemy",symbol:"⚗",color:"#FF1F7A",message:`"The hard things you've moved through are not the price you paid to do this work. They are the work. Every moment you survived, every identity you shed — that's the curriculum. That's the IP."`,deeperReading:`You've been separating your story from your work. Treating your personal journey as the backdrop and your credentials as the substance. But your clients aren't primarily buying your methodology. They're buying the fact that you survived something and found your way through.\n\nThe parts of your story you're most tempted to minimize — those parts are the alchemical moments. The places where the raw material became something else.\n\nYour clients need to know those parts exist. Not for you to overshare. But because when she's in the middle of her hard thing, she needs to know that someone who came out the other side is sitting across from her.\n\nThe alchemy is in the story. Own it.`,whyYouPulled:`You pulled this card because you've been leading with what you learned instead of what you've lived. Your story is your most powerful marketing tool.`,action:"Write one piece of content today that uses a real moment from your own journey — not the polished version, the real one."},
+  {id:30,title:"The Permission Slip",symbol:"✉",color:"#E8A0BF",message:`"This is the card that says: you don't need permission. You never did. The version of you who was waiting for someone to give you the green light is the version that kept you small."`,deeperReading:`There's something you've been holding back. Something you want to offer, or say, or charge, or build — that you've been waiting to feel authorized to do.\n\nThe authorization isn't coming from outside you. It never was. The people who built the things you admire didn't wait until they felt qualified. They decided, and then they moved.\n\nThis isn't a call to be reckless. It's a call to stop confusing preparation with postponement. You know the difference. You've been prepared for a while now.\n\nThe only thing this card is giving you permission to do is something you already have permission to do.`,whyYouPulled:`You pulled this card because you've been waiting for something external to authorize the move you already know is yours to make. The authorization is this card. Make the move.`,action:"Do the one thing today that you've been waiting to feel authorized to do. Not when you're ready. Now."},
+  {id:31,title:"The Magnetic Message",symbol:"◎",color:"#4B3F72",message:`"Your message doesn't need to reach everyone. It needs to reach her. The one woman who reads it and feels like you were inside her head."`,deeperReading:`Most content in the healing and coaching space sounds like it was written for a composite person. It's accurate to the general experience but specific to no one. And content that's specific to no one converts for no one.\n\nYour message has been too broad. Not because you're not smart enough to get specific — because specificity feels exclusionary. Like if you write for her specifically, you'll lose everyone else.\n\nBut the opposite is true. When you write for the one specific person with the one specific problem — everyone who is in that moment recognizes themselves.\n\nThe specific is the universal. Always has been.`,whyYouPulled:`You pulled this card because your content has been landing with too many people as "nice" and not enough people as "how did she know." Get more specific.`,action:"Write the content today that speaks to one specific moment — the exact thought, the exact feeling your ideal client is in right now."},
+  {id:32,title:"The Sacred Rest",symbol:"☾",color:"#89CFF0",message:`"Rest is not something you earn after the work is done. The work is never done. Rest is something you choose, as an act of faith that the business will not fall apart while you're away."`,deeperReading:`You've been running on a belief that stopping is dangerous. That if you slow down, the momentum will disappear. So you keep moving, even when you're empty.\n\nBut the momentum you're protecting through depletion isn't real momentum. It's the appearance of momentum. And your audience can feel the difference.\n\nReal momentum comes from the woman who shows up fully charged. Who writes from overflow rather than obligation.\n\nThis card is not giving you permission to stop forever. It's giving you permission to stop today. Fully and without guilt.`,whyYouPulled:`You pulled this card because you need rest and you've been refusing to take it. Take it today. Your business will be better for it.`,action:"Rest today. Real rest. Not scroll-resting. The kind where your nervous system actually slows down. Take it without apology."},
+  {id:33,title:"The Dream Becoming Real",symbol:"★",color:"#FF1F7A",message:`"The vision you've been holding isn't a fantasy. It's a blueprint. Blueprints don't exist in the future — they exist now, as a set of instructions that the present is already acting on."`,deeperReading:`You've been treating the vision as something out there — a destination you'll arrive at if you do enough things right. But the dream becoming real isn't a future event. It's a present accumulation.\n\nEvery client session you show up for fully. Every piece of content that lands the way you hoped. Every moment you choose the business over the easier path.\n\nThe version of you who has everything you're working toward is not a stranger. She's the current version of you, six months or two years further into the practice of being exactly who you already are.\n\nYou're not behind her. You're becoming her.`,whyYouPulled:`You pulled this card because you needed to be reminded that the dream is not out there waiting. It's here, unfolding. You're in it right now.`,action:"Acknowledge what's already real. Write down three specific things that are part of the dream and already exist in your life and business today."}
+];
+
+// ── SVG ICONS ────────────────────────────────────────────────────
+const Feather = ({size=32,color="#89CFF0",style={}}) => (
+  <svg width={size} height={size*1.8} viewBox="0 0 30 54" fill="none" style={style}>
+    <path d="M15 50 C15 50 5 34 5 20 C5 10 9 4 15 4 C21 4 25 10 25 20 C25 34 15 50 15 50Z" stroke={color} strokeWidth="1" fill="none" opacity="0.5"/>
+    <line x1="15" y1="50" x2="15" y2="6" stroke={color} strokeWidth="0.8" opacity="0.6"/>
+    {[14,20,26,32,38].map(y=><g key={y}><path d={`M15 ${y} C11 ${y-2} 7 ${y} 5 ${y+3}`} stroke={color} strokeWidth="0.7" fill="none" opacity="0.45"/><path d={`M15 ${y} C19 ${y-2} 23 ${y} 25 ${y+3}`} stroke={color} strokeWidth="0.7" fill="none" opacity="0.45"/></g>)}
+  </svg>
+);
+const Lotus = ({size=36,color="#FF1F7A",style={}}) => (
+  <svg width={size} height={size} viewBox="0 0 60 55" fill="none" style={style}>
+    <path d="M30 46 C30 46 16 35 16 23 C16 15 22 10 30 10 C38 10 44 15 44 23 C44 35 30 46 30 46Z" stroke={color} strokeWidth="1.2" fill="none"/>
+    <path d="M30 46 C30 46 9 32 8 17 C7 9 13 5 20 8 C24 10 27 17 30 24" stroke={color} strokeWidth="1" fill="none" opacity="0.55"/>
+    <path d="M30 46 C30 46 51 32 52 17 C53 9 47 5 40 8 C36 10 33 17 30 24" stroke={color} strokeWidth="1" fill="none" opacity="0.55"/>
+    <line x1="30" y1="46" x2="30" y2="52" stroke={color} strokeWidth="1"/>
+    <path d="M26 52 C28 50 32 50 34 52" stroke={color} strokeWidth="1" fill="none"/>
+  </svg>
+);
+const MetatronsCube = ({size=120,color="#FF1F7A",opacity=0.7}) => {
+  const cx=50,cy=50,R=38;
+  const pts=[[cx,cy],[cx,cy-R*0.67],[cx+R*0.58,cy-R*0.33],[cx+R*0.58,cy+R*0.33],[cx,cy+R*0.67],[cx-R*0.58,cy+R*0.33],[cx-R*0.58,cy-R*0.33]];
+  const lines=[];
+  for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++) lines.push(React.createElement('line',{key:`${i}-${j}`,x1:pts[i][0],y1:pts[i][1],x2:pts[j][0],y2:pts[j][1],stroke:color,strokeWidth:"0.6",opacity:opacity*0.5}));
+  return (<svg width={size} height={size} viewBox="0 0 100 100" fill="none">{lines}{pts.map(([x,y],i)=><circle key={i} cx={x} cy={y} r={R/3} stroke={color} strokeWidth="0.8" fill="none" opacity={opacity*0.7}/>)}<circle cx={cx} cy={cy} r={R} stroke={color} strokeWidth="1" fill="none" opacity={opacity*0.5}/><circle cx={cx} cy={cy} r={R*0.67} stroke={color} strokeWidth="0.7" fill="none" opacity={opacity*0.35}/></svg>);
+};
+const Sparkle = ({x,y,s,delay,dur}) => (<div style={{position:"absolute",left:x,top:y,width:s,height:s,pointerEvents:"none",animation:`sp ${dur}s ${delay}s infinite ease-in-out`,opacity:0}}><svg width={s} height={s} viewBox="0 0 16 16"><path d="M8 1 L9 6.5 L14.5 8 L9 9.5 L8 15 L7 9.5 L1.5 8 L7 6.5 Z" fill="#FF1F7A" opacity="0.7"/></svg></div>);
+const Sparkles = () => {
+  const stars=useRef(Array.from({length:18},()=>({x:`${5+Math.random()*90}%`,y:`${5+Math.random()*90}%`,s:5+Math.random()*8,delay:Math.random()*5,dur:2.5+Math.random()*3}))).current;
+  return <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>{stars.map((s,i)=><Sparkle key={i} {...s}/>)}</div>;
+};
+const Divider = () => (<div style={{display:"flex",alignItems:"center",gap:"14px",margin:"28px 0"}}><div style={{flex:1,height:"1px",background:"linear-gradient(to right,transparent,rgba(255,31,122,0.3))"}}/><span style={{color:"#FF1F7A",fontSize:"11px"}}>✦</span><div style={{flex:1,height:"1px",background:"linear-gradient(to left,transparent,rgba(255,31,122,0.3))"}}/></div>);
+
+// ── LOADING MESSAGES ─────────────────────────────────────────────
+const LoadingMessages = () => {
+  const [idx,setIdx]=useState(0);
+  const [fade,setFade]=useState(true);
+  useEffect(()=>{const iv=setInterval(()=>{setFade(false);setTimeout(()=>{setIdx(i=>(i+1)%LOADING_MSGS.length);setFade(true);},400);},2200);return ()=>clearInterval(iv);},[]);
+  return (<div style={{padding:"8px 0",textAlign:"center"}}><div style={{display:"flex",gap:"6px",justifyContent:"center",marginBottom:"14px"}}>{[0,1,2].map(i=><div key={i} style={{width:"6px",height:"6px",borderRadius:"50%",background:"#FF1F7A",opacity:0.5,animation:`pulse 1.2s ${i*0.3}s infinite ease-in-out`}}/>)}</div><p style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"16px",color:"#FF1F7A",fontStyle:"italic",margin:0,lineHeight:1.6,opacity:fade?1:0,transition:"opacity 0.4s ease"}}>{LOADING_MSGS[idx]}</p></div>);
+};
+
+// ── FACE DOWN CARD ───────────────────────────────────────────────
+const FaceDownCard = ({onClick}) => {
+  const [hov,setHov]=useState(false);
+  return (<div onClick={onClick} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)} style={{width:"100%",aspectRatio:"2/3.2",background:"linear-gradient(160deg,#fdfcf4,#f5ede0)",border:"1.5px solid rgba(255,31,122,0.2)",borderRadius:"16px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden",boxShadow:hov?"0 12px 36px rgba(255,31,122,0.18)":"0 6px 28px rgba(255,31,122,0.07)",transform:hov?"translateY(-4px)":"translateY(0)",transition:"all 0.25s"}}><div style={{position:"absolute",inset:"8px",border:"1px solid rgba(255,31,122,0.12)",borderRadius:"10px",pointerEvents:"none"}}/>{["tl","tr","bl","br"].map(pos=><div key={pos} style={{position:"absolute",top:pos.startsWith("t")?10:undefined,bottom:pos.startsWith("b")?10:undefined,left:pos.endsWith("l")?10:undefined,right:pos.endsWith("r")?10:undefined,opacity:0.2}}><svg width="12" height="12" viewBox="0 0 18 18" fill="none"><path d={pos==="tl"?"M1 9 L1 1 L9 1":pos==="tr"?"M17 9 L17 1 L9 1":pos==="bl"?"M1 9 L1 17 L9 17":"M17 9 L17 17 L9 17"} stroke="#FF1F7A" strokeWidth="1.2"/></svg></div>)}<div style={{opacity:0.14}}><MetatronsCube size={78} color="#FF1F7A" opacity={1}/></div><div style={{position:"absolute",bottom:"14px",fontSize:"9px",letterSpacing:"0.2em",textTransform:"uppercase",color:"#FF1F7A",fontFamily:"Georgia,serif",opacity:0.4}}>Tap to Reveal</div></div>);
+};
+
+// ── BREATHING CIRCLE ─────────────────────────────────────────────
+const BreathingCircle = ({onComplete}) => {
+  const [phase,setPhase]=useState("ready");
+  const [breath,setBreath]=useState(0);
+  const [question,setQuestion]=useState("");
+  const [showQ,setShowQ]=useState(false);
+  const dur={inhale:4000,exhale:6000};
+  const runCycle=(count)=>{setBreath(count+1);setPhase("inhale");setTimeout(()=>{setPhase("exhale");setTimeout(()=>{if(count+1>=3){setPhase("done");setShowQ(true);}else runCycle(count+1);},dur.exhale);},dur.inhale);};
+  const labels={ready:"Tap to begin",inhale:"Breathe in...",exhale:"Breathe out...",done:"Beautiful."};
+  const expanded=phase==="inhale";
+  const sz=expanded?180:phase==="ready"?110:90;
+  return (
+    <div style={{textAlign:"center",padding:"20px 0"}}>
+      {phase!=="ready"&&phase!=="done"&&<div style={{fontSize:"11px",letterSpacing:"0.2em",textTransform:"uppercase",color:"#FF1F7A",fontFamily:"Georgia,serif",marginBottom:"20px",opacity:0.7}}>Breath {breath} of 3</div>}
+      {phase==="ready"&&<div style={{fontSize:"13px",color:"#aaa",fontFamily:"Georgia,serif",fontStyle:"italic",marginBottom:"20px"}}>Three breaths before you choose</div>}
+      <div onClick={phase==="ready"?()=>runCycle(0):undefined} style={{width:`${sz}px`,height:`${sz}px`,borderRadius:"50%",background:expanded?"radial-gradient(circle,rgba(255,31,122,0.1) 0%,rgba(255,31,122,0.03) 60%,transparent 100%)":"radial-gradient(circle,rgba(255,31,122,0.05) 0%,transparent 70%)",border:`1.5px solid rgba(255,31,122,${phase==="ready"?0.3:0.7})`,margin:"0 auto 8px",display:"flex",alignItems:"center",justifyContent:"center",cursor:phase==="ready"?"pointer":"default",transition:`all ${expanded?dur.inhale:phase==="exhale"?dur.exhale:300}ms ease-in-out`,boxShadow:expanded?"0 0 40px rgba(255,31,122,0.1)":"none"}}>
+        <div style={{width:`${sz*0.6}px`,height:`${sz*0.6}px`,borderRadius:"50%",border:`1px solid rgba(255,31,122,${(phase==="ready"?0.3:0.7)*0.5})`,display:"flex",alignItems:"center",justifyContent:"center",transition:`all ${expanded?dur.inhale:phase==="exhale"?dur.exhale:300}ms ease-in-out`}}>
+          <div style={{width:"8px",height:"8px",borderRadius:"50%",background:"#FF1F7A",opacity:phase==="ready"?0.3:0.8,transition:"opacity 0.5s"}}/>
+        </div>
+      </div>
+      <div style={{display:"flex",gap:"8px",justifyContent:"center",margin:"16px 0 24px"}}>{[1,2,3].map(i=><div key={i} style={{width:"6px",height:"6px",borderRadius:"50%",background:breath>=i?"#FF1F7A":"transparent",border:"1px solid rgba(255,31,122,0.4)",transition:"background 0.4s"}}/>)}</div>
+      <p style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"18px",color:phase==="done"?"#FF1F7A":"#3a3a3a",fontStyle:"italic",margin:"0 0 24px",transition:"color 0.5s"}}>{labels[phase]||""}</p>
+      {showQ&&(<div style={{animation:"fadeUp 0.6s ease"}}><p style={{fontFamily:"Georgia,serif",fontSize:"15px",color:"#777",fontStyle:"italic",marginBottom:"16px",lineHeight:1.7}}>Ask your highest self one question.<br/>Hold it in your heart as you choose.</p><textarea value={question} onChange={e=>setQuestion(e.target.value)} placeholder="What do I need to know right now..." style={{width:"100%",padding:"16px 18px",fontFamily:"Georgia,serif",fontSize:"15px",color:"#3a3a3a",background:"linear-gradient(160deg,#fdfcf4,#f8f3ec)",border:"1.5px solid rgba(255,31,122,0.18)",borderRadius:"14px",resize:"none",height:"80px",lineHeight:1.7,marginBottom:"16px",fontStyle:"italic"}}/><button onClick={()=>onComplete(question)} style={{width:"100%",background:"linear-gradient(135deg,#FF1F7A,#FF6BAB)",border:"none",borderRadius:"14px",padding:"18px",color:"#fff",fontSize:"16px",fontFamily:"'Playfair Display',Georgia,serif",letterSpacing:"0.08em",boxShadow:"0 4px 20px rgba(255,31,122,0.25)"}}>Choose My Card ✦</button></div>)}
+    </div>
+  );
+};
+
+// ── TRANSIT TAB ──────────────────────────────────────────────────
+const TransitTab = ({hdType, openCenters}) => {
+  const c = WEEKLY_CONTENT;
+  const g = WEEKLY_GATE;
+
+  const typeSection = hdType ? c.typeContent[hdType] : null;
+  const centerSections = openCenters.filter(center => c.centerContent[center]);
+
+  const Block = ({eyebrow,eyebrowColor="#FF1F7A",title,sub,icon,children}) => (
+    <div style={{marginBottom:"36px"}}>
+      <div style={{display:"flex",alignItems:"flex-start",gap:"14px",marginBottom:"14px"}}>
+        <div style={{flexShrink:0,marginTop:"4px"}}>{icon}</div>
+        <div>
+          <div style={{fontSize:"12px",letterSpacing:"0.22em",textTransform:"uppercase",color:eyebrowColor,fontFamily:"Georgia,serif",marginBottom:"6px"}}>{eyebrow}</div>
+          <h3 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"26px",color:"#1A1A2E",margin:"0 0 4px",fontWeight:"600",lineHeight:1.15}}>{title}</h3>
+          {sub&&<div style={{fontSize:"15px",color:"#89CFF0",fontFamily:"Georgia,serif",fontStyle:"italic",marginTop:"4px"}}>{sub}</div>}
+        </div>
+      </div>
+      <div style={{width:"48px",height:"2px",background:`linear-gradient(to right,${eyebrowColor},transparent)`,marginBottom:"20px"}}/>
+      <div style={{fontSize:"16px",color:"#3a3a3a",lineHeight:1.9,fontFamily:"Georgia,serif",whiteSpace:"pre-line"}}>{children}</div>
+    </div>
+  );
+
+  return (
+    <div>
+      {/* Gate Hero */}
+      <div style={{textAlign:"center",padding:"36px 20px 28px",borderBottom:"1px solid #f0e8d4",background:"linear-gradient(180deg,#fffdf7,#fdfcf8)"}}>
+        <div style={{display:"flex",justifyContent:"center",gap:"20px",alignItems:"flex-end",marginBottom:"16px"}}>
+          <Feather size={28} color="#89CFF0"/>
+          <Lotus size={52} color="#FF1F7A"/>
+          <Feather size={28} color="#E8A0BF" style={{transform:"scaleX(-1)"}}/>
+        </div>
+        <div style={{fontSize:"10px",letterSpacing:"0.25em",color:"#FF1F7A",textTransform:"uppercase",marginBottom:"6px",fontFamily:"Georgia,serif"}}>Sun Transit · {g.dates}</div>
+        <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"40px",color:"#1A1A2E",margin:"0 0 4px",fontWeight:"600"}}>Gate {g.number}</h2>
+        <div style={{fontSize:"20px",color:"#89CFF0",fontFamily:"'Playfair Display',Georgia,serif",fontStyle:"italic",marginBottom:"14px"}}>{g.name}</div>
+        <div style={{display:"flex",gap:"8px",justifyContent:"center",flexWrap:"wrap",marginBottom:"14px"}}>
+          {[g.center,g.channel,g.line].filter(Boolean).map(t=><span key={t} style={{background:"rgba(255,31,122,0.06)",border:"1px solid rgba(255,31,122,0.18)",borderRadius:"20px",padding:"4px 14px",fontSize:"11px",color:"#FF1F7A",fontFamily:"Georgia,serif"}}>{t}</span>)}
+        </div>
+        <div style={{display:"flex",gap:"24px",justifyContent:"center",marginBottom:"12px"}}>
+          {[["Shadow",g.shadow,"#89CFF0"],["Gift",g.gift,"#FF1F7A"],["Siddhi",g.siddhi,"#E8A0BF"]].filter(([,v])=>v).map(([l,v,col])=>(
+            <div key={l} style={{textAlign:"center"}}>
+              <div style={{fontSize:"9px",letterSpacing:"0.18em",textTransform:"uppercase",color:col,fontFamily:"Georgia,serif",marginBottom:"3px"}}>{l}</div>
+              <div style={{fontSize:"13px",color:"#1A1A2E",fontFamily:"'Playfair Display',Georgia,serif",fontStyle:"italic"}}>{v}</div>
+            </div>
+          ))}
+        </div>
+        {hdType&&<div style={{marginTop:"10px"}}><span style={{background:"rgba(137,207,240,0.1)",border:"1px solid rgba(137,207,240,0.25)",borderRadius:"20px",padding:"4px 16px",fontSize:"11px",color:"#89CFF0",fontFamily:"Georgia,serif"}}>✦ {hdType}{openCenters.length>0?` · ${openCenters.length} Open ${openCenters.length===1?"Center":"Centers"}`:""}</span></div>}
+      </div>
+
+      <div style={{padding:"32px 22px"}}>
+        <Block eyebrow="Boss Energy Download" title="You Already Know." icon={<div style={{fontSize:"24px"}}>☀️</div>}>{c.boss}</Block>
+        <Divider/>
+        <Block eyebrow="Where You Might Get Stuck" eyebrowColor="#89CFF0" title="The Shadow of This Gate" icon={<Feather size={26} color="#89CFF0"/>}>{c.shadow}</Block>
+        <Divider/>
+
+        {/* HD TYPE + CENTERS SECTION — only shows if member set up their design */}
+        {(typeSection||centerSections.length>0)&&(
+          <>
+            <Block eyebrow="Your Human Design This Week" eyebrowColor="#89CFF0" title="How This Gate Affects Your Design" icon={<Lotus size={26} color="#89CFF0"/>}>
+              {[
+                typeSection,
+                centerSections.length>0 ? `How this shadow affects your open centers:\n\n${centerSections.map(center=>`${c.centerContent[center]}`).join("\n\n")}` : null
+              ].filter(Boolean).join("\n\n")}
+            </Block>
+            <Divider/>
+          </>
+        )}
+
+        <Block eyebrow="Highest Self Expression" eyebrowColor="#E8A0BF" title="Stepping Into Your Power" sub="The gift of this gate" icon={<div style={{fontSize:"22px"}}>✨</div>}>{c.high}</Block>
+        <Divider/>
+        <Block eyebrow="How This Aligns With Your Business" title="Your Magnetic Shift This Week" icon={<Feather size={26} color="#FF1F7A" style={{transform:"scaleX(-1)"}}/>}>{c.business}</Block>
+        <Divider/>
+        <Block eyebrow="Your Move This Week" title="One Thing. Today." icon={<div style={{fontSize:"22px"}}>🔥</div>}>{c.move}</Block>
+        <Divider/>
+
+        {/* Reflections */}
+        <div style={{marginBottom:"32px"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"6px"}}>
+            <div style={{fontSize:"20px"}}>✦</div>
+            <div style={{fontSize:"12px",letterSpacing:"0.22em",textTransform:"uppercase",color:"#89CFF0",fontFamily:"Georgia,serif"}}>Reflection for Today</div>
+          </div>
+          <div style={{width:"48px",height:"2px",background:"linear-gradient(to right,rgba(137,207,240,0.5),transparent)",marginBottom:"18px"}}/>
+          {c.reflections.map((q,i)=>(
+            <div key={i} style={{display:"flex",gap:"14px",alignItems:"flex-start",marginBottom:"16px"}}>
+              <span style={{color:"#FF1F7A",fontSize:"16px",marginTop:"2px",flexShrink:0}}>✨</span>
+              <p style={{margin:0,fontSize:"16px",color:"#444",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:1.8}}>{q}</p>
+            </div>
+          ))}
+        </div>
+        <Divider/>
+
+        {/* Affirmation */}
+        <div style={{background:"linear-gradient(135deg,rgba(255,31,122,0.03),rgba(255,107,171,0.02))",border:"1.5px solid rgba(255,31,122,0.12)",borderRadius:"20px",padding:"32px 26px",textAlign:"center"}}>
+          <div style={{display:"flex",justifyContent:"center",gap:"16px",marginBottom:"16px"}}>
+            <Feather size={22} color="#89CFF0"/><Lotus size={36} color="#FF1F7A"/><Feather size={22} color="#E8A0BF" style={{transform:"scaleX(-1)"}}/>
+          </div>
+          <div style={{fontSize:"12px",letterSpacing:"0.25em",textTransform:"uppercase",color:"#FF1F7A",marginBottom:"12px",fontFamily:"Georgia,serif"}}>Today's Affirmation</div>
+          <p style={{fontSize:"15px",color:"#aaa",fontFamily:"Georgia,serif",fontStyle:"italic",marginBottom:"18px",lineHeight:1.6}}>{c.affirmationInstruction}</p>
+          <p style={{fontSize:"24px",color:"#1A1A2E",fontFamily:"'Playfair Display',Georgia,serif",fontStyle:"italic",lineHeight:1.65,margin:"0 0 22px"}}>{c.affirmation}</p>
+          <div style={{width:"36px",height:"1px",background:"rgba(255,31,122,0.3)",margin:"0 auto 18px"}}/>
+          <p style={{fontSize:"16px",color:"#555",fontFamily:"Georgia,serif",lineHeight:1.85,margin:0}}>{c.affirmationClose}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── ORACLE TAB ───────────────────────────────────────────────────
+const OracleTab = () => {
+  const [phase,setPhase]=useState("breath");
+  const [three,setThree]=useState([]);
+  const [picked,setPicked]=useState(null);
+  const [revealed,setRevealed]=useState(false);
+  const [userQ,setUserQ]=useState("");
+  const [why,setWhy]=useState("");
+
+  const onBreath=(q)=>{setUserQ(q||"");const s=[...ORACLE_CARDS].sort(()=>Math.random()-0.5).slice(0,3);setThree(s);setPhase("selecting");};
+
+  const pick=async(card)=>{
+    setPicked(card);setWhy("");setPhase("loading");
+    if(userQ&&userQ.trim().length>3){
+      try{
+        const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,messages:[{role:"user",content:`Write 3-4 sentences for "Why You Pulled This Card" for the "${card.title}" oracle card. The woman's question: "${userQ}". Card energy: ${card.deeperReading.slice(0,120)}. Speak directly as "you". No jargon. Don't start with "You pulled this card because". Connect her question to this card's energy in a personal, activating way.`}]})});
+        const data=await res.json();
+        const t=data.content?.[0]?.text||"";
+        setWhy(t.trim()||card.whyYouPulled);
+      }catch{setWhy(card.whyYouPulled);}
+    }else{setWhy(card.whyYouPulled);await new Promise(r=>setTimeout(r,500));}
+    setPhase("revealed");setTimeout(()=>setRevealed(true),100);
+  };
+
+  const reset=()=>{setPhase("breath");setPicked(null);setRevealed(false);setThree([]);setUserQ("");setWhy("");};
+
+  return (
+    <div style={{paddingBottom:"32px"}}>
+      <div style={{textAlign:"center",padding:"32px 24px 24px",borderBottom:"1px solid #f0e8d4"}}>
+        <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"32px",color:"#1A1A2E",margin:"0 0 6px",fontWeight:"400",fontStyle:"italic"}}>Your <span style={{color:"#FF1F7A"}}>Oracle</span></h2>
+        <p style={{margin:0,fontSize:"15px",color:"#888",fontFamily:"Georgia,serif",fontStyle:"italic"}}>A message from your highest self</p>
+      </div>
+      {phase==="breath"&&<div style={{padding:"24px 24px 32px"}}><p style={{textAlign:"center",fontFamily:"'Playfair Display',Georgia,serif",fontSize:"19px",color:"#1A1A2E",fontStyle:"italic",marginBottom:"4px",lineHeight:1.6}}>Before you choose your card...</p><p style={{textAlign:"center",fontFamily:"Georgia,serif",fontSize:"15px",color:"#888",fontStyle:"italic",marginBottom:"0",lineHeight:1.7}}>Take three breaths. Hold your question in your heart.</p><BreathingCircle onComplete={onBreath}/></div>}
+      {phase==="selecting"&&(
+        <div style={{padding:"28px 20px"}}>
+          {userQ&&<div style={{background:"rgba(255,31,122,0.03)",border:"1px solid rgba(255,31,122,0.12)",borderRadius:"12px",padding:"14px 18px",marginBottom:"20px",textAlign:"center"}}><p style={{margin:0,fontFamily:"Georgia,serif",fontSize:"14px",color:"#FF1F7A",fontStyle:"italic"}}>"{userQ}"</p></div>}
+          <p style={{textAlign:"center",fontFamily:"'Playfair Display',Georgia,serif",fontSize:"19px",color:"#1A1A2E",fontStyle:"italic",marginBottom:"6px"}}>Which card is calling to you?</p>
+          <p style={{textAlign:"center",fontFamily:"Georgia,serif",fontSize:"14px",color:"#aaa",fontStyle:"italic",marginBottom:"28px"}}>Don't think. Feel.</p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"14px",marginBottom:"24px"}}>{three.map(card=><FaceDownCard key={card.id} onClick={()=>pick(card)}/>)}</div>
+          <div style={{textAlign:"center"}}><button onClick={reset} style={{background:"none",border:"1px solid #e8e0d0",borderRadius:"10px",padding:"12px 24px",color:"#999",fontFamily:"Georgia,serif",fontSize:"14px"}}>Start Again</button></div>
+        </div>
+      )}
+      {phase==="loading"&&(<div style={{padding:"60px 24px",textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",minHeight:"400px",justifyContent:"center"}}><div style={{marginBottom:"32px",animation:"slowPulse 3s infinite ease-in-out"}}><MetatronsCube size={160} color="#FF1F7A" opacity={0.6}/></div><LoadingMessages/></div>)}
+      {phase==="revealed"&&picked&&(
+        <div style={{opacity:revealed?1:0,transition:"opacity 0.6s ease",padding:"28px 24px"}}>
+          <div style={{textAlign:"center",marginBottom:"28px"}}>
+            <div style={{fontSize:"11px",letterSpacing:"0.22em",textTransform:"uppercase",color:"#FF1F7A",fontFamily:"Georgia,serif",marginBottom:"12px"}}>You Pulled</div>
+            <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"36px",color:"#1A1A2E",margin:"0 0 8px",fontWeight:"600"}}>{picked.title}</h2>
+            <p style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"17px",color:"#FF1F7A",fontStyle:"italic",margin:"0 0 8px"}}>{picked.symbol}</p>
+            {userQ&&<p style={{fontFamily:"Georgia,serif",fontSize:"14px",color:"#aaa",fontStyle:"italic",margin:"8px 0 0"}}>In answer to: "{userQ}"</p>}
+          </div>
+          <div style={{background:"linear-gradient(160deg,#fdfcf4,#f5ede0)",border:`1.5px solid ${picked.color}30`,borderRadius:"20px",padding:"36px 28px",marginBottom:"24px",position:"relative",overflow:"hidden",boxShadow:"0 8px 48px rgba(255,31,122,0.07)"}}>
+            {["tl","tr","bl","br"].map(pos=>(<div key={pos} style={{position:"absolute",top:pos.startsWith("t")?14:undefined,bottom:pos.startsWith("b")?14:undefined,left:pos.endsWith("l")?14:undefined,right:pos.endsWith("r")?14:undefined,opacity:0.2}}><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d={pos==="tl"?"M1 9 L1 1 L9 1":pos==="tr"?"M17 9 L17 1 L9 1":pos==="bl"?"M1 9 L1 17 L9 17":"M17 9 L17 17 L9 17"} stroke="#FF1F7A" strokeWidth="1.2"/></svg></div>))}
+            <div style={{textAlign:"center",marginBottom:"24px"}}>
+              <div style={{display:"flex",alignItems:"center",gap:"10px",justifyContent:"center",marginBottom:"18px"}}><div style={{height:"1px",width:"36px",background:"rgba(255,31,122,0.25)"}}/><span style={{fontSize:"14px",letterSpacing:"0.18em",textTransform:"uppercase",color:"#FF1F7A",fontFamily:"Georgia,serif"}}>A Message From Her</span><div style={{height:"1px",width:"36px",background:"rgba(255,31,122,0.25)"}}/></div>
+              <p style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"20px",color:"#1A1A2E",lineHeight:1.8,margin:"0 0 16px",fontStyle:"italic",textAlign:"center"}}>{picked.message}</p>
+              <p style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"14px",color:"#FF1F7A",fontStyle:"italic",margin:0}}>— love, your highest self</p>
+            </div>
+            <div style={{height:"1px",background:"linear-gradient(to right,transparent,rgba(255,31,122,0.2),transparent)",margin:"24px 0"}}/>
+            <div style={{marginBottom:"24px"}}>
+              <div style={{textAlign:"center",fontSize:"14px",letterSpacing:"0.18em",textTransform:"uppercase",color:"#FF1F7A",fontFamily:"Georgia,serif",marginBottom:"18px"}}>The Deeper Reading</div>
+              <div style={{fontSize:"17px",color:"#2a2a2a",lineHeight:2,fontFamily:"Georgia,serif",whiteSpace:"pre-line"}}>{picked.deeperReading}</div>
+            </div>
+            <div style={{height:"1px",background:"linear-gradient(to right,transparent,rgba(255,31,122,0.2),transparent)",margin:"24px 0"}}/>
+            <div style={{background:"rgba(255,31,122,0.03)",border:"1px solid rgba(255,31,122,0.1)",borderRadius:"14px",padding:"24px 22px",marginBottom:"20px"}}>
+              <div style={{display:"flex",justifyContent:"center",marginBottom:"10px"}}><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="10" stroke="#FF1F7A" strokeWidth="1" opacity="0.5"/><path d="M7 11 L10 14 L15 8" stroke="#FF1F7A" strokeWidth="1.2" opacity="0.7"/></svg></div>
+              <div style={{textAlign:"center",fontSize:"14px",letterSpacing:"0.18em",textTransform:"uppercase",color:"#FF1F7A",fontFamily:"Georgia,serif",marginBottom:"14px"}}>Why You Pulled This Card</div>
+              <p style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"17px",color:"#3a3a3a",fontStyle:"italic",lineHeight:1.85,margin:0,textAlign:"center"}}>{why||picked.whyYouPulled}</p>
+            </div>
+            <div style={{background:"linear-gradient(135deg,rgba(255,31,122,0.04),transparent)",border:"1px solid rgba(255,31,122,0.12)",borderRadius:"14px",padding:"22px 20px"}}>
+              <div style={{textAlign:"center",fontSize:"14px",letterSpacing:"0.18em",textTransform:"uppercase",color:"#FF1F7A",fontFamily:"Georgia,serif",marginBottom:"12px"}}>Your Action Today</div>
+              <p style={{fontFamily:"Georgia,serif",fontSize:"16px",color:"#2a2a2a",lineHeight:1.85,margin:0}}>{picked.action}</p>
+            </div>
+          </div>
+          <button onClick={reset} style={{width:"100%",background:"linear-gradient(135deg,#FF1F7A,#FF6BAB)",border:"none",borderRadius:"12px",padding:"18px",color:"#fff",fontSize:"15px",fontFamily:"'Playfair Display',Georgia,serif",letterSpacing:"0.06em",boxShadow:"0 4px 16px rgba(255,31,122,0.22)"}}>Draw Again ✦</button>
+          <p style={{textAlign:"center",fontFamily:"Georgia,serif",fontSize:"14px",color:"#bbb",fontStyle:"italic",marginTop:"20px",lineHeight:1.7}}>The card that lands is the one you needed. Trust it.</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── SETUP MODAL ──────────────────────────────────────────────────
+const SetupModal = ({onComplete,initial}) => {
+  const [step,setStep]=useState(1);
+  const [type,setType]=useState(initial?.type||null);
+  const [centers,setCenters]=useState(initial?.centers||[]);
+  const tog=c=>setCenters(p=>p.includes(c)?p.filter(x=>x!==c):[...p,c]);
+  return (
+    <div style={{position:"fixed",inset:0,background:"rgba(253,252,248,0.97)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",backdropFilter:"blur(8px)"}}>
+      <div style={{maxWidth:"420px",width:"100%",maxHeight:"90vh",overflowY:"auto",background:"#fff",borderRadius:"24px",border:"1.5px solid rgba(255,31,122,0.12)",padding:"36px 28px",boxShadow:"0 8px 60px rgba(255,31,122,0.07)"}}>
+        <div style={{textAlign:"center",marginBottom:"24px"}}>
+          <Lotus size={44} color="#FF1F7A"/>
+          <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"22px",color:"#1A1A2E",margin:"12px 0 6px",fontWeight:"normal"}}>{initial?"Update Your Design":"Welcome, Queen"}</h2>
+          <p style={{margin:0,fontSize:"13px",color:"#aaa",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:1.6}}>{step===1?"Select your Human Design type so your weekly message speaks directly to you.":"Select your open (undefined) centers. Skip any you're unsure of."}</p>
+        </div>
+        {step===1?(
+          <>
+            <div style={{display:"flex",flexDirection:"column",gap:"8px",marginBottom:"24px"}}>
+              {HD_TYPES.map(t=><button key={t} onClick={()=>setType(t)} style={{background:type===t?"linear-gradient(135deg,rgba(255,31,122,0.07),rgba(137,207,240,0.05))":"#fafaf8",border:type===t?"1.5px solid #FF1F7A":"1.5px solid #ede8dc",borderRadius:"12px",padding:"14px 18px",color:type===t?"#1A1A2E":"#bbb",fontSize:"15px",fontFamily:"Georgia,serif",textAlign:"left",transition:"all 0.2s"}}>{type===t?"✦  ":""}{t}</button>)}
+            </div>
+            <button onClick={()=>type&&setStep(2)} disabled={!type} style={{width:"100%",background:type?"linear-gradient(135deg,#FF1F7A,#FF6BAB)":"#eee",border:"none",borderRadius:"12px",padding:"16px",color:type?"#fff":"#bbb",fontSize:"15px",fontFamily:"Georgia,serif",letterSpacing:"0.06em"}}>Continue →</button>
+          </>
+        ):(
+          <>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginBottom:"20px"}}>
+              {CENTERS.map(c=><button key={c} onClick={()=>tog(c)} style={{background:centers.includes(c)?"rgba(137,207,240,0.07)":"#fafaf8",border:centers.includes(c)?"1.5px solid #89CFF0":"1.5px solid #ede8dc",borderRadius:"10px",padding:"12px 10px",color:centers.includes(c)?"#1A1A2E":"#bbb",fontSize:"13px",fontFamily:"Georgia,serif",textAlign:"center",transition:"all 0.2s"}}>{centers.includes(c)?"✦ ":""}{c}</button>)}
+            </div>
+            <p style={{fontSize:"11px",color:"#ccc",fontFamily:"Georgia,serif",textAlign:"center",marginBottom:"16px",fontStyle:"italic"}}>Not sure? Skip — you can update anytime.</p>
+            <div style={{display:"flex",gap:"10px"}}>
+              <button onClick={()=>setStep(1)} style={{background:"#fafaf8",border:"1.5px solid #ede8dc",borderRadius:"12px",padding:"14px 18px",color:"#ccc",fontFamily:"Georgia,serif"}}>←</button>
+              <button onClick={()=>type&&onComplete({type,centers})} style={{flex:1,background:"linear-gradient(135deg,#FF1F7A,#FF6BAB)",border:"none",borderRadius:"12px",padding:"16px",color:"#fff",fontSize:"15px",fontFamily:"Georgia,serif",letterSpacing:"0.06em"}}>Enter the Portal ✦</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ── MAIN APP ─────────────────────────────────────────────────────
+function App() {
+  const [tab,setTab]=useState("transit");
+  const [profile,setProfile]=useState(null);
+  const [showSetup,setShowSetup]=useState(false);
+  const [loaded,setLoaded]=useState(false);
+
+  useEffect(()=>{
+    try{const saved=localStorage.getItem(STORAGE_KEY);if(saved){const p=JSON.parse(saved);if(p?.type){setProfile(p);setShowSetup(false);}else setShowSetup(true);}else setShowSetup(true);}
+    catch{setShowSetup(true);}
+    setLoaded(true);
+  },[]);
+
+  const handleProfile=(p)=>{setProfile(p);try{localStorage.setItem(STORAGE_KEY,JSON.stringify(p));}catch{}setShowSetup(false);};
+
+  if(!loaded) return null;
+
+  return (
+    <div style={{minHeight:"100vh",background:"#FDFCF8",color:"#1A1A2E",fontFamily:"Georgia,serif",position:"relative"}}>
+      <Sparkles/>
+      {showSetup&&<SetupModal onComplete={handleProfile} initial={profile}/>}
+      <div style={{position:"relative",zIndex:1,maxWidth:"680px",margin:"0 auto",paddingBottom:"60px"}}>
+        <div style={{textAlign:"center",padding:"36px 20px 22px",borderBottom:"1px solid #f0e8d4"}}>
+          <div style={{fontSize:"10px",letterSpacing:"0.28em",textTransform:"uppercase",color:"#FF1F7A",marginBottom:"8px",fontFamily:"Georgia,serif"}}>Embody Wealth Inner Circle</div>
+          <h1 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"30px",fontWeight:"600",margin:"0 0 4px",color:"#1A1A2E"}}>The Wealth Portal</h1>
+          <p style={{margin:0,fontSize:"13px",color:"#bbb",fontStyle:"italic"}}>Weekly energy · Oracle · Business alignment</p>
+          {profile?.type&&(
+            <div style={{display:"flex",gap:"8px",justifyContent:"center",flexWrap:"wrap",marginTop:"12px"}}>
+              {[profile.type,...(profile.centers?.length?[`${profile.centers.length} Open ${profile.centers.length===1?"Center":"Centers"}`]:[])].map(t=><span key={t} style={{background:"rgba(255,31,122,0.05)",border:"1px solid rgba(255,31,122,0.18)",borderRadius:"20px",padding:"4px 14px",fontSize:"11px",color:"#FF1F7A",fontFamily:"Georgia,serif"}}>{t}</span>)}
+            </div>
+          )}
+        </div>
+        <div style={{display:"flex",borderBottom:"1px solid #f0e8d4"}}>
+          {[{id:"transit",label:"☀  Sun Transit"},{id:"oracle",label:"✦  Daily Oracle"}].map(t=>(
+            <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,background:"none",border:"none",borderBottom:tab===t.id?"3px solid #FF1F7A":"3px solid transparent",padding:"18px",color:tab===t.id?"#FF1F7A":"#666",fontSize:"15px",letterSpacing:"0.1em",textTransform:"uppercase",fontFamily:"'Playfair Display',Georgia,serif",fontWeight:tab===t.id?"600":"400",transition:"all 0.2s"}}>{t.label}</button>
+          ))}
+        </div>
+        <div style={{animation:"fadeUp 0.35s ease"}}>
+          {tab==="transit"&&<TransitTab hdType={profile?.type} openCenters={profile?.centers||[]}/>}
+          {tab==="oracle"&&<OracleTab/>}
+        </div>
+        <div style={{textAlign:"center",padding:"20px",borderTop:"1px solid #f0e8d4"}}>
+          <button onClick={()=>setShowSetup(true)} style={{background:"none",border:"none",color:"#888",fontSize:"13px",letterSpacing:"0.1em",textTransform:"uppercase",fontFamily:"Georgia,serif",fontWeight:"600",marginBottom:"14px",display:"block",margin:"0 auto 14px"}}>Update My Design</button>
+          <Lotus size={24} color="#FF1F7A"/>
+          <p style={{margin:"8px 0 0",fontSize:"12px",color:"#FF6BAB",letterSpacing:"0.1em",fontFamily:"Georgia,serif"}}>To living our dreams. — Aurailia ✦</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
