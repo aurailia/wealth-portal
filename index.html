@@ -21,6 +21,7 @@ body{background:#FDFCF8;font-family:Georgia,serif;min-height:100vh}
 button{cursor:pointer;transition:opacity 0.2s}
 button:hover{opacity:0.88}
 textarea:focus{outline:none}
+@media(min-width:900px){.two-col{display:grid !important;grid-template-columns:1fr 1fr;gap:32px}.two-col-3{display:grid !important;grid-template-columns:1fr 1fr 1fr;gap:20px}}
 </style>
 </head>
 <body>
@@ -71,8 +72,8 @@ const BreathingCircle = ({onComplete}) => {
     <div style={{textAlign:"center",padding:"20px 0"}}>
       {phase!=="ready"&&phase!=="done"&&<div style={{fontSize:"14px",letterSpacing:"0.2em",textTransform:"uppercase",color:"#FF1F7A",fontFamily:"Georgia,serif",marginBottom:"20px",opacity:0.8}}>Breath {breath} of 3</div>}
       {phase==="ready"&&<div style={{fontSize:"17px",color:"#555",fontFamily:"Georgia,serif",fontStyle:"italic",marginBottom:"20px"}}>Three breaths before you choose</div>}
-      <div onClick={phase==="ready"?()=>runCycle(0):undefined} style={{width:`${sz}px`,height:`${sz}px`,borderRadius:"50%",background:expanded?"radial-gradient(circle,rgba(255,31,122,0.1) 0%,rgba(255,31,122,0.03) 60%,transparent 100%)":"radial-gradient(circle,rgba(255,31,122,0.05) 0%,transparent 70%)",border:`1.5px solid rgba(255,31,122,${phase==="ready"?0.3:0.7})`,margin:"0 auto 8px",display:"flex",alignItems:"center",justifyContent:"center",cursor:phase==="ready"?"pointer":"default",transition:`all ${expanded?dur.inhale:phase==="exhale"?dur.exhale:300}ms ease-in-out`,boxShadow:expanded?"0 0 40px rgba(255,31,122,0.1)":"none"}}>
-        <div style={{width:`${sz*0.6}px`,height:`${sz*0.6}px`,borderRadius:"50%",border:`1px solid rgba(255,31,122,${(phase==="ready"?0.3:0.7)*0.5})`,display:"flex",alignItems:"center",justifyContent:"center",transition:`all ${expanded?dur.inhale:phase==="exhale"?dur.exhale:300}ms ease-in-out`}}>
+      <div onClick={phase==="ready"?()=>runCycle(0):undefined} style={{width:sz+"px",height:sz+"px",borderRadius:"50%",background:expanded?"radial-gradient(circle,rgba(255,31,122,0.1) 0%,rgba(255,31,122,0.03) 60%,transparent 100%)":"radial-gradient(circle,rgba(255,31,122,0.05) 0%,transparent 70%)",border:"1.5px solid rgba(255,31,122,"+(phase==="ready"?0.3:0.7)+")",margin:"0 auto 8px",display:"flex",alignItems:"center",justifyContent:"center",cursor:phase==="ready"?"pointer":"default",transition:"all "+(expanded?dur.inhale:phase==="exhale"?dur.exhale:300)+"ms ease-in-out",boxShadow:expanded?"0 0 40px rgba(255,31,122,0.1)":"none"}}>
+        <div style={{width:(sz*0.6)+"px",height:(sz*0.6)+"px",borderRadius:"50%",border:"1px solid rgba(255,31,122,"+((phase==="ready"?0.3:0.7)*0.5)+")",display:"flex",alignItems:"center",justifyContent:"center",transition:"all "+(expanded?dur.inhale:phase==="exhale"?dur.exhale:300)+"ms ease-in-out"}}>
           <div style={{width:"8px",height:"8px",borderRadius:"50%",background:"#FF1F7A",opacity:phase==="ready"?0.3:0.8,transition:"opacity 0.5s"}}/>
         </div>
       </div>
@@ -84,98 +85,100 @@ const BreathingCircle = ({onComplete}) => {
 };
 
 // ── TRANSIT TAB ──────────────────────────────────────────────────
-const TransitTab = ({hdType, openCenters}) => {
-  const c = WEEKLY_CONTENT;
-  const g = WEEKLY_GATE;
+const TransitTab = ({hdType,openCenters}) => {
+  const c=WEEKLY_CONTENT, g=WEEKLY_GATE;
+  const typeSection=hdType?c.typeContent[hdType]:null;
+  const centerSections=openCenters.filter(ct=>c.centerContent[ct]);
+  const hdText=[typeSection,centerSections.length>0?"How this shadow affects your open centers:\n\n"+centerSections.map(ct=>c.centerContent[ct]).join("\n\n"):null].filter(Boolean).join("\n\n");
 
-  const typeSection = hdType ? c.typeContent[hdType] : null;
-  const centerSections = openCenters.filter(center => c.centerContent[center]);
+  const card={background:"#fff",border:"1px solid #f0e8d4",borderRadius:"14px",padding:"22px"};
+  const grid={display:"grid",gridTemplateColumns:"1fr 1fr",gap:"20px",marginBottom:"20px"};
 
   const Block = ({eyebrow,eyebrowColor="#FF1F7A",title,sub,icon,children}) => (
-    <div style={{marginBottom:"36px"}}>
-      <div style={{display:"flex",alignItems:"flex-start",gap:"14px",marginBottom:"14px"}}>
+    <div style={{marginBottom:"0"}}>
+      <div style={{display:"flex",alignItems:"flex-start",gap:"12px",marginBottom:"10px"}}>
         <div style={{flexShrink:0,marginTop:"4px"}}>{icon}</div>
         <div>
-          <div style={{fontSize:"13px",letterSpacing:"0.22em",textTransform:"uppercase",color:eyebrowColor,fontFamily:"Georgia,serif",marginBottom:"6px"}}>{eyebrow}</div>
-          <h3 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"26px",color:"#1A1A2E",margin:"0 0 4px",fontWeight:"600",lineHeight:1.15}}>{title}</h3>
-          {sub&&<div style={{fontSize:"15px",color:"#89CFF0",fontFamily:"Georgia,serif",fontStyle:"italic",marginTop:"4px"}}>{sub}</div>}
+          <div style={{fontSize:"13px",letterSpacing:"0.2em",textTransform:"uppercase",color:eyebrowColor,fontFamily:"Georgia,serif",marginBottom:"4px"}}>{eyebrow}</div>
+          <h3 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"22px",color:"#1A1A2E",margin:"0 0 2px",fontWeight:"600",lineHeight:1.15}}>{title}</h3>
+          {sub&&<div style={{fontSize:"14px",color:"#89CFF0",fontFamily:"Georgia,serif",fontStyle:"italic",marginTop:"2px"}}>{sub}</div>}
         </div>
       </div>
-      <div style={{width:"48px",height:"2px",background:`linear-gradient(to right,${eyebrowColor},transparent)`,marginBottom:"20px"}}/>
-      <div style={{fontSize:"16px",color:"#3a3a3a",lineHeight:1.9,fontFamily:"Georgia,serif",whiteSpace:"pre-line"}}>{children}</div>
+      <div style={{width:"40px",height:"2px",background:"linear-gradient(to right,"+eyebrowColor+",transparent)",marginBottom:"12px"}}/>
+      <div style={{fontSize:"15px",color:"#3a3a3a",lineHeight:1.85,fontFamily:"Georgia,serif",whiteSpace:"pre-line"}}>{children}</div>
     </div>
   );
 
+  const Div = () => (<div style={{display:"flex",alignItems:"center",gap:"14px",margin:"16px 0"}}><div style={{flex:1,height:"1px",background:"linear-gradient(to right,transparent,rgba(255,31,122,0.3))"}}/><span style={{color:"#FF1F7A",fontSize:"11px"}}>✦</span><div style={{flex:1,height:"1px",background:"linear-gradient(to left,transparent,rgba(255,31,122,0.3))"}}/>  </div>);
+
   return (
     <div>
-      {/* Gate Hero */}
-      <div style={{textAlign:"center",padding:"36px 32px 28px",borderBottom:"1px solid #f0e8d4",position:"relative",overflow:"hidden",backgroundImage:`url(${IMGS.bg1})`,backgroundSize:"cover",backgroundPosition:"center top"}}>
+      <div style={{textAlign:"center",padding:"32px 24px 24px",borderBottom:"1px solid #f0e8d4",position:"relative",overflow:"hidden",backgroundImage:"url(images/background-1.png)",backgroundSize:"cover",backgroundPosition:"center top"}}>
         <div style={{position:"absolute",inset:0,background:"rgba(255,255,255,0.52)"}}/>
-        <div style={{position:"relative",zIndex:1,display:"flex",justifyContent:"center",marginBottom:"16px"}}>
-          <img src={IMGS.hd_bodygraph} alt="Human Design" style={{width:"100px",height:"auto",opacity:0.92,display:"block",margin:"0 auto",filter:"drop-shadow(0 2px 10px rgba(100,120,200,0.25))"}}/>
+        <div style={{position:"relative",zIndex:1}}>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:"10px"}}>
+            <img src={IMGS.hd_bodygraph} alt="Human Design" style={{width:"100px",height:"auto",opacity:0.92,display:"block",margin:"0 auto",filter:"drop-shadow(0 2px 10px rgba(100,120,200,0.2))"}}/>
+          </div>
+          <div style={{fontSize:"13px",letterSpacing:"0.25em",color:"#FF1F7A",textTransform:"uppercase",marginBottom:"6px",fontFamily:"Georgia,serif"}}>Sun Transit · {g.dates}</div>
+          <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"40px",color:"#1A1A2E",margin:"0 0 4px",fontWeight:"600"}}>Gate {g.number}</h2>
+          <div style={{fontSize:"26px",color:"#333",fontFamily:"'Playfair Display',Georgia,serif",fontWeight:"600",marginBottom:"12px"}}>{g.name}</div>
+          {hdType&&<span style={{background:"rgba(137,207,240,0.1)",border:"1px solid rgba(137,207,240,0.25)",borderRadius:"20px",padding:"5px 16px",fontSize:"13px",color:"#89CFF0",fontFamily:"Georgia,serif",fontWeight:"600"}}>✦ {hdType}{openCenters.length>0?" · "+openCenters.length+" Open "+(openCenters.length===1?"Center":"Centers"):""}</span>}
         </div>
-        <div style={{fontSize:"13px",letterSpacing:"0.25em",color:"#FF1F7A",textTransform:"uppercase",marginBottom:"8px",fontFamily:"Georgia,serif"}}>Sun Transit · {g.dates}</div>
-        <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"44px",color:"#1A1A2E",margin:"0 0 6px",fontWeight:"600"}}>Gate {g.number}</h2>
-        <div style={{fontSize:"22px",color:"#333",fontFamily:"'Playfair Display',Georgia,serif",fontWeight:"600",marginBottom:"10px",fontSize:"26px"}}>{g.name}</div>
-              </div>
       </div>
 
-      <div style={{padding:"36px 32px"}}>
-        {/* Two-column layout on desktop, single on mobile */}
-        <div className="two-col" style={{display:"block"}}>
-          <div>
-            <Block eyebrow="Boss Energy Download" title="You Already Know." icon={<div style={{fontSize:"24px"}}>☀️</div>}>{c.boss}</Block>
-            <Divider/>
-            <Block eyebrow="Where You Might Get Stuck" eyebrowColor="#89CFF0" title="The Shadow of This Gate" icon={<Feather size={26} color="#89CFF0"/>}>{c.shadow}</Block>
-            <Divider/>
-            {(typeSection||centerSections.length>0)&&(
-              <>
-                <Block eyebrow="Your Human Design This Week" eyebrowColor="#89CFF0" title="How This Gate Affects Your Design" icon={<Lotus size={26} color="#89CFF0"/>}>
-                  {[typeSection,centerSections.length>0?`How this shadow affects your open centers:\n\n${centerSections.map(center=>c.centerContent[center]).join("\n\n")}`:null].filter(Boolean).join("\n\n")}
-                </Block>
-                <Divider/>
-              </>
-            )}
-          </div>
-          <div>
-            <Block eyebrow="Highest Self Expression" eyebrowColor="#E8A0BF" title="Stepping Into Your Power" sub="The gift of this gate" icon={<div style={{fontSize:"22px"}}>✨</div>}>{c.high}</Block>
-            <Divider/>
-            <Block eyebrow="How This Aligns With Your Business" title="Your Magnetic Shift This Week" icon={<Feather size={26} color="#FF1F7A" style={{transform:"scaleX(-1)"}}/>}>{c.business}</Block>
-            <Divider/>
-            <Block eyebrow="Your Move This Week" title="One Thing. Today." icon={<div style={{fontSize:"22px"}}>🔥</div>}>{c.move}</Block>
-          </div>
+      <div style={{padding:"24px 20px"}}>
+        <div style={grid}>
+          <div style={card}><Block eyebrow="Boss Energy Download" title="You Already Know." icon={<div style={{fontSize:"20px"}}>☀️</div>}>{c.boss}</Block></div>
+          <div style={card}><Block eyebrow="Highest Self Expression" eyebrowColor="#E8A0BF" title="Stepping Into Your Power" sub="The gift of this gate" icon={<div style={{fontSize:"18px"}}>✨</div>}>{c.high}</Block></div>
         </div>
-
-        <Divider/>
-
-        {/* Reflections */}
-        <div style={{marginBottom:"32px"}}>
-          <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"6px"}}>
-            <div style={{fontSize:"20px"}}>✦</div>
-            <div style={{fontSize:"13px",letterSpacing:"0.22em",textTransform:"uppercase",color:"#89CFF0",fontFamily:"Georgia,serif"}}>Reflection for Today</div>
-          </div>
-          <div style={{width:"48px",height:"2px",background:"linear-gradient(to right,rgba(137,207,240,0.5),transparent)",marginBottom:"18px"}}/>
-          <div className="two-col" style={{display:"block"}}>
+        <Div/>
+        <div style={grid}>
+          <div style={card}><Block eyebrow="Where You Might Get Stuck" eyebrowColor="#89CFF0" title="The Shadow of This Gate" icon={<Feather size={20} color="#89CFF0"/>}>{c.shadow}</Block></div>
+          {hdText?(
+            <div style={card}><Block eyebrow="Your Human Design This Week" eyebrowColor="#89CFF0" title="How This Gate Affects Your Design" icon={<Lotus size={20} color="#89CFF0"/>}>{hdText}</Block></div>
+          ):(
+            <div style={{...card,display:"flex",alignItems:"center",justifyContent:"center",minHeight:"160px"}}>
+              <div style={{textAlign:"center"}}>
+                <Lotus size={32} color="#89CFF0"/>
+                <p style={{fontFamily:"Georgia,serif",fontSize:"13px",color:"#aaa",fontStyle:"italic",marginTop:"10px",lineHeight:1.6}}>Set up your Human Design to see how this gate affects you personally.</p>
+              </div>
+            </div>
+          )}
+        </div>
+        <Div/>
+        <div style={{...card,marginBottom:"0"}}>
+          <Block eyebrow="How This Aligns With Your Business" title="Your Magnetic Shift This Week" icon={<Feather size={20} color="#FF1F7A" style={{transform:"scaleX(-1)"}}/>}>{c.business}</Block>
+        </div>
+        <Div/>
+        <div style={grid}>
+          <div style={card}><Block eyebrow="Your Move This Week" title="One Thing. Today." icon={<div style={{fontSize:"18px"}}>🔥</div>}>{c.move}</Block></div>
+          <div style={card}>
+            <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"10px"}}>
+              <span style={{fontSize:"16px"}}>✦</span>
+              <div>
+                <div style={{fontSize:"13px",letterSpacing:"0.2em",textTransform:"uppercase",color:"#89CFF0",fontFamily:"Georgia,serif",marginBottom:"3px"}}>Reflection for Today</div>
+                <h3 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"21px",color:"#1A1A2E",margin:0,fontWeight:"600"}}>Questions for This Week</h3>
+              </div>
+            </div>
+            <div style={{width:"36px",height:"2px",background:"linear-gradient(to right,rgba(137,207,240,0.5),transparent)",marginBottom:"12px"}}/>
             {c.reflections.map((q,i)=>(
-              <div key={i} style={{display:"flex",gap:"14px",alignItems:"flex-start",marginBottom:"20px"}}>
-                <span style={{color:"#FF1F7A",fontSize:"18px",marginTop:"2px",flexShrink:0}}>✨</span>
-                <p style={{margin:0,fontSize:"17px",color:"#444",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:1.8}}>{q}</p>
+              <div key={i} style={{display:"flex",gap:"10px",alignItems:"flex-start",marginBottom:"14px"}}>
+                <span style={{color:"#FF1F7A",fontSize:"14px",marginTop:"2px",flexShrink:0}}>✨</span>
+                <p style={{margin:0,fontSize:"15px",color:"#444",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:1.75}}>{q}</p>
               </div>
             ))}
           </div>
         </div>
-        <Divider/>
-
-        {/* Affirmation */}
-        <div style={{background:"linear-gradient(135deg,rgba(255,31,122,0.03),rgba(255,107,171,0.02))",border:"1.5px solid rgba(255,31,122,0.12)",borderRadius:"20px",padding:"40px 36px",textAlign:"center"}}>
-          <div style={{display:"flex",justifyContent:"center",gap:"16px",marginBottom:"16px"}}>
-            <Feather size={22} color="#89CFF0"/><Lotus size={36} color="#FF1F7A"/><Feather size={22} color="#E8A0BF" style={{transform:"scaleX(-1)"}}/>
+        <Div/>
+        <div style={{...card,textAlign:"center",padding:"28px"}}>
+          <div style={{display:"flex",justifyContent:"center",gap:"14px",marginBottom:"12px"}}>
+            <Feather size={20} color="#89CFF0"/><Lotus size={32} color="#FF1F7A"/><Feather size={20} color="#E8A0BF" style={{transform:"scaleX(-1)"}}/>
           </div>
-          <div style={{fontSize:"13px",letterSpacing:"0.25em",textTransform:"uppercase",color:"#FF1F7A",marginBottom:"14px",fontFamily:"Georgia,serif"}}>Today's Affirmation</div>
-          <p style={{fontSize:"17px",color:"#666",fontFamily:"Georgia,serif",fontStyle:"italic",marginBottom:"20px",lineHeight:1.6}}>{c.affirmationInstruction}</p>
-          <p style={{fontSize:"26px",color:"#1A1A2E",fontFamily:"'Playfair Display',Georgia,serif",fontStyle:"italic",lineHeight:1.65,margin:"0 0 24px"}}>{c.affirmation}</p>
-          <div style={{width:"36px",height:"1px",background:"rgba(255,31,122,0.3)",margin:"0 auto 20px"}}/>
-          <p style={{fontSize:"17px",color:"#555",fontFamily:"Georgia,serif",lineHeight:1.85,margin:0,maxWidth:"680px",marginLeft:"auto",marginRight:"auto"}}>{c.affirmationClose}</p>
+          <div style={{fontSize:"12px",letterSpacing:"0.25em",textTransform:"uppercase",color:"#FF1F7A",marginBottom:"10px",fontFamily:"Georgia,serif"}}>Today's Affirmation</div>
+          <p style={{fontSize:"15px",color:"#777",fontFamily:"Georgia,serif",fontStyle:"italic",marginBottom:"14px",lineHeight:1.6}}>{c.affirmationInstruction}</p>
+          <p style={{fontSize:"22px",color:"#1A1A2E",fontFamily:"'Playfair Display',Georgia,serif",fontStyle:"italic",lineHeight:1.65,margin:"0 0 16px"}}>{c.affirmation}</p>
+          <div style={{width:"30px",height:"1px",background:"rgba(255,31,122,0.3)",margin:"0 auto 14px"}}/>
+          <p style={{fontSize:"15px",color:"#555",fontFamily:"Georgia,serif",lineHeight:1.85,margin:"0 auto",maxWidth:"560px"}}>{c.affirmationClose}</p>
         </div>
       </div>
     </div>
@@ -223,7 +226,7 @@ const OracleTab = () => {
             <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"36px",color:"#1A1A2E",margin:"0 0 8px",fontWeight:"600"}}>{picked.title}</h2>
             <p style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"17px",color:"#FF1F7A",fontStyle:"italic",margin:"0 0 8px"}}>{picked.symbol}</p>
           </div>
-          <div style={{background:"linear-gradient(160deg,#fdfcf4,#f5ede0)",border:`1.5px solid ${picked.color}30`,borderRadius:"20px",padding:"36px 28px",marginBottom:"24px",position:"relative",overflow:"hidden",boxShadow:"0 8px 48px rgba(255,31,122,0.07)"}}>
+          <div style={{background:"linear-gradient(160deg,#fdfcf4,#f5ede0)",border:"1.5px solid rgba(100,120,200,0.2)",borderRadius:"20px",padding:"36px 28px",marginBottom:"24px",position:"relative",overflow:"hidden",boxShadow:"0 8px 48px rgba(255,31,122,0.07)"}}>
             {["tl","tr","bl","br"].map(pos=>(<div key={pos} style={{position:"absolute",top:pos.startsWith("t")?14:undefined,bottom:pos.startsWith("b")?14:undefined,left:pos.endsWith("l")?14:undefined,right:pos.endsWith("r")?14:undefined,opacity:0.2}}><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d={pos==="tl"?"M1 9 L1 1 L9 1":pos==="tr"?"M17 9 L17 1 L9 1":pos==="bl"?"M1 9 L1 17 L9 17":"M17 9 L17 17 L9 17"} stroke="#FF1F7A" strokeWidth="1.2"/></svg></div>))}
             <div style={{textAlign:"center",marginBottom:"24px"}}>
               <div style={{display:"flex",alignItems:"center",gap:"10px",justifyContent:"center",marginBottom:"18px"}}><div style={{height:"1px",width:"36px",background:"rgba(255,31,122,0.25)"}}/><span style={{fontSize:"14px",letterSpacing:"0.18em",textTransform:"uppercase",color:"#FF1F7A",fontFamily:"Georgia,serif"}}>A Message From Her</span><div style={{height:"1px",width:"36px",background:"rgba(255,31,122,0.25)"}}/></div>
@@ -311,13 +314,6 @@ function App() {
 
   return (
     <div style={{minHeight:"100vh",background:"#FDFCF8",color:"#1A1A2E",fontFamily:"Georgia,serif",position:"relative"}}>
-      <style>{`
-        @media(min-width:900px){
-          .two-col{display:grid !important;grid-template-columns:1fr 1fr;gap:40px}
-          .two-col-3{display:grid !important;grid-template-columns:1fr 1fr 1fr;gap:20px}
-          .card-grid{grid-template-columns:1fr 1fr 1fr 1fr 1fr !important}
-        }
-      `}</style>
       <Sparkles/>
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
         <img src={IMGS.bg3} style={{position:"absolute",top:"-5%",left:"-5%",width:"40%",opacity:0.35,mixBlendMode:"multiply"}}/>
@@ -336,7 +332,7 @@ function App() {
           <p style={{margin:0,fontSize:"15px",color:"#666",fontStyle:"italic"}}>This Week's Magnetic Message</p>
           {profile?.type&&(
             <div style={{display:"flex",gap:"10px",justifyContent:"center",flexWrap:"wrap",marginTop:"14px"}}>
-              {[profile.type,...(profile.centers?.length?[`${profile.centers.length} Open ${profile.centers.length===1?"Center":"Centers"}`]:[])].map(t=><span key={t} style={{background:"rgba(255,31,122,0.07)",border:"1.5px solid rgba(255,31,122,0.3)",borderRadius:"20px",padding:"6px 18px",fontSize:"15px",color:"#FF1F7A",fontFamily:"Georgia,serif",fontWeight:"600"}}>{t}</span>)}
+              {[profile.type,...(profile.centers?.length?[profile.centers.length+" Open "+(profile.centers.length===1?"Center":"Centers")]:[])].map(t=><span key={t} style={{background:"rgba(255,31,122,0.07)",border:"1.5px solid rgba(255,31,122,0.3)",borderRadius:"20px",padding:"6px 18px",fontSize:"15px",color:"#FF1F7A",fontFamily:"Georgia,serif",fontWeight:"600"}}>{t}</span>)}
             </div>
           )}
         </div>
